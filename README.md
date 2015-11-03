@@ -1,7 +1,7 @@
 # 2D BEUT Matlab program
 
 ## Introduction
-The 2D Boundary Element Unstructured Transission-line (BEUT) method is a hybrid electromagnetic simulation scheme which combines the Boundary Element Method (BEM) and Unstructured Transmission-Line Modelling (UTLM) method, to give an unconditionally stable time domain solver which has perfectly radiating boundaries.
+The 2D Boundary Element Unstructured Transmission-line (BEUT) method is a hybrid electromagnetic simulation scheme which combines the Boundary Element Method (BEM) and Unstructured Transmission-Line Modelling (UTLM) method, to give an unconditionally stable time domain solver which has perfectly radiating boundaries.
 
 Please note, this implementation in Matlab is intended for research/educational use, to show the concept, but at the expense of computational cost! I have created a more efficient, parallelised C++ program to compute the BEM operators which will run faster (speed depends on number of cores), useful if you decide to do any complex structures. This can be found at my [2DTDBEM] repository.
 
@@ -9,7 +9,7 @@ Please note, this implementation in Matlab is intended for research/educational 
 To install, place the entire contents of +BEUT inside a Matlab search path.
 
 ## Contents
-There are 5 subfolders within **+BEUT**:
+There are 5 subfolders within *+BEUT*:
 * *+BEM*
 * *+Excitation*
 * *+Main*
