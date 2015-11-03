@@ -10,30 +10,31 @@ To install, place the entire contents of +BEUT inside a Matlab search path.
 
 ## Contents
 There are 5 subfolders within **+BEUT**:
-* **+BEM**
-* **+Excitation**
-* **+Main**
-* **+Meshing**
-* **+UTLM**
+* *+BEM*
+* *+Excitation*
+* *+Main*
+* *+Meshing*
+* *+UTLM*
 
-The **+Main** folder contains examples on how to use BEUT. There are **+Main** folders elsewhere in the project to demonstrate the use of UTLM and BEM as individual solvers. The **+Meshing/+Main** folder is the first point of call for creating a mesh or loading a custom 2D mesh. For demonstration and testing of individual classes and functions, refer to the **+Demo** folders.
-Generally, you will only want to open and run scripts (in the **+Main** and **+Demo** folders).
+The *+Main* folder contains examples on how to use BEUT. There are *+Main* folders elsewhere in the project to demonstrate the use of UTLM and BEM as individual solvers. The *+Meshing/+Main* folder is the first point of call for creating a mesh or loading a custom 2D mesh. For demonstration and testing of individual classes and functions, refer to the *+Demo* folders.
+Generally, you will only want to open and run scripts (in the *+Main* and *+Demo* folders).
 
-If using the [2DTDBEM] C++ program to compute BEM operators, you will need to change the path which stores the resulting *.mat* files; This can done by modifying the path string in **+BEUT/CFolder.m**.
+If using the [2DTDBEM] C++ program to compute BEM operators, you will need to change the path which stores the resulting *.mat* files; This can done by modifying the path string in *+BEUT/CFolder.m*.
 
 ## Program flow
 Once you are all set up, the general flow of a typical program is as follows:
-1. Create/load mesh and save as a "UTLMClass" object (for UTLM) and a "MeshBoundary" object (for BEM)
+
+1. Create/load mesh and save as a *UTLMClass* object (for UTLM) and a *MeshBoundary* object (for BEM)
 3. Calculate BEM operators (using either the Matlab or C++ solver)
 4. Set material parameters
 5. Create excitation
 5. Define probe locations
-6. Roll through the timestepping loop (Marchin-on-in-Time)
+6. Roll through the timestepping loop (Marching-on-in-Time)
 7. View results
 
-## Thanks
+## Credits
 Some functions have not been written by me, but I would like to give thanks to the original authors. Please inspect these files/folders for affiliations and copyrights:
-* **+distmesh**
+* *+distmesh*
 * *read_wobj.m*
 * *lgquad.m* (originally *lgwt.m*)
 
