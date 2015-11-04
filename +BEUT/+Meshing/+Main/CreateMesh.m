@@ -162,4 +162,5 @@ file_name = [filename num2str(numel(mesh.mesh_boundary)) '.mat'];
 c_file = [BEUT.CFolder filesep 'input' filesep file_name];
 mat_file = [fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep file_name];
 
-% BEUT.Meshing.save( mesh, mat_file, c_file );
+use_dual = true;
+BEUT.Meshing.save( mesh, use_dual, mat_file, c_file );

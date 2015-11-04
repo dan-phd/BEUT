@@ -400,6 +400,12 @@ for i=1:num_fields
         field(i).axis_size = [domain_x(1) domain_x(end) domain_y(1) domain_y(end) Min(i) Max(i) Min(i) Max(i)];
         [domain_x,domain_y,domain_z] = ndgrid(domain_x,domain_y,domain_z);
     end
+    
+    % patch elements have 0 height
+    if strcmp(field(i).plot_type, 'patch')
+        field(i).patch_colorbar = field(i).axis_size(3:4);
+        field(i).axis_size(end) = 0;
+    end
 end
 
 
@@ -554,7 +560,7 @@ play_function
                 patch(patches);
                 
                 view (field(i).dimensions);
-                caxis(field(i).axis_size(3:4));
+                caxis(field(i).patch_colorbar);
                 colorbar;
                 axis equal;
                 

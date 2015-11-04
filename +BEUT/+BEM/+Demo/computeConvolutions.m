@@ -1,4 +1,4 @@
-% Demonstrate ComputeConvolutions function
+% Demonstrate computeConvolutions function
 c = 1;
 dt = 0.1/c;
 
