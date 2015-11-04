@@ -1,5 +1,4 @@
 %% Resonant frequecies of dielectric cylinder
-clear all;
 
 % Constants
 eps0 = 8.854187817e-12;

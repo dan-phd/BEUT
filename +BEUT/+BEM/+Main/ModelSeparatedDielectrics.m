@@ -1,5 +1,4 @@
 %% 2D time domain BEM for 2 separated dielectrics
-clear all
 
 %% Parameters
 mu0 = 4e-7*pi;               % permeability of free space

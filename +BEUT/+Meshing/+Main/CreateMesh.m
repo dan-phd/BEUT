@@ -2,7 +2,6 @@
 % see: http://persson.berkeley.edu/distmesh/
 % Note this is for simple geometries only, don't expect to mesh anything too complex!
 % Use a dedicated mesher and import the file for more complex geometries.
-clear all
 
 
 %% cylinder resonator (aka circle mesh)

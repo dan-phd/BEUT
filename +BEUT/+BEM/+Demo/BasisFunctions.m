@@ -1,5 +1,4 @@
 % Demonstrate basis functions
-clear all
 
 %% Load the geometry
 load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res21.mat']);

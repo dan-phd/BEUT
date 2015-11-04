@@ -1,6 +1,4 @@
 % Load a mesh from file, extract materials from it, plot it, and then save it as a halfedge mesh we can use
-clear all
-
 
 %% Load mesh
 mesh_name = 'test5_2000'; extension = 'mphtxt';

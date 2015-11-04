@@ -1,5 +1,4 @@
 % Demonstrate Lagrange interpolator class
-clear all
 
 dt = 0.1;
 x=(-2:0.01:6)*dt;

@@ -1,5 +1,4 @@
 % BEM analytical solutions for a PEC cylinder
-clear all
 
 % Constants
 eps = 8.854187817e-12;

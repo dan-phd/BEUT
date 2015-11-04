@@ -1,5 +1,4 @@
 % Demonstrate computation of RHS
-clear all
 
 c = 3e8;
 N_T = 1000;

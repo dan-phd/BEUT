@@ -1,5 +1,4 @@
 %% Plot a variety pf 2D Greens function in the time domain
-clear all
 
 c = 299792458;
 dt = 1/c;

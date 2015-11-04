@@ -1,4 +1,6 @@
 % Model scattering by a cylindrical dielectric using UTLM
+% This is a demonstration of modelling different material paramaeters
+% and absorbing boundary conditions
 global mu0 eps0;
 
 
@@ -10,7 +12,8 @@ c0 = 1/sqrt(eps0*mu0);
 
 
 %% Read mesh
-load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_dielectric_cav20.mat']);
+load([fileparts(which...
+    ('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_dielectric_cav20.mat']);
 radius=max(range(mesh.vertices))/2;
 
 
@@ -21,8 +24,8 @@ eps_r(2) = 3; mu_r(2) = 1;
 mesh.setMaterial(eps_r,mu_r);
 mesh.plot_materials('eps_r');
 
-% Find dt
-dt = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /4;       % dt < minLinklength*sqrt(2*eps0*mu0)
+% Find dt < minLinklength*sqrt(2*eps0*mu0)
+dt = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /4;
 mesh.dt=dt;
 time = 0:dt:(NT-1)*dt;
 
@@ -44,7 +47,7 @@ centerEdges = find(normalised_CC==min(normalised_CC));
 sourceEdges = centerEdges(2);
 
 min_edge_length = min(vertcat(mesh.halfedges.edgeLength));
-width = min_edge_length/c0*10;
+width = 3*min_edge_length/c0*10;
 delay = 1;
 
 inc_wave = BEUT.Excitation.GaussianWave(width, delay, c0);

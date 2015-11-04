@@ -1,5 +1,4 @@
 %% 2D time domain BEM for cylindrical dielectric
-clear all
 
 %% Parameters
 mu0 = 4e-7*pi;               % permeability of free space

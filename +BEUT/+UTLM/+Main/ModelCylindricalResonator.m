@@ -1,4 +1,8 @@
 % Demonstrate scattering within a cylindrical resonator using UTLM
+% Compare results with analytical
+% NOTE: to hit more analytical resonant frequencies, increase the requency
+% spectrum of the excitation. However, increasing it too far will lead to 
+% artificial dispersion, only using a finer mesh will solve this.
 global mu0 eps0;
 
 
@@ -10,7 +14,8 @@ c0 = 1/sqrt(eps0*mu0);
 
 
 %% Read mesh
-load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res69.mat']);
+load([fileparts(which...
+    ('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res69.mat']);
 radius=max(range(mesh.vertices))/2;
 
 
@@ -19,8 +24,8 @@ radius=max(range(mesh.vertices))/2;
 eps_r = 1; mu_r = 1;
 mesh.setMaterial(eps_r,mu_r);
 
-% Find dt
-dt = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /4;       % dt < minLinklength*sqrt(2*eps0*mu0)
+% Find dt < minLinklength*sqrt(2*eps0*mu0)
+dt = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /4;
 mesh.dt=dt;
 time = 0:dt:(NT-1)*dt;
 
@@ -38,7 +43,7 @@ mesh.setBoundary(-1);
 sourceEdges = 1;
 
 min_edge_length = min(vertcat(mesh.halfedges.edgeLength));
-width = min_edge_length/c0*10;
+width = 2.5*min_edge_length/c0*10;
 delay = 1;
 
 inc_wave = BEUT.Excitation.GaussianWave(width,delay,c0);

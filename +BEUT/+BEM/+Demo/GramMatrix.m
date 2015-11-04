@@ -1,7 +1,6 @@
 % Demonstrate computation of Gram matrix
-clear all
 
-%% Load the geometry
+% Load the geometry
 load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res21.mat']);
 boundary=BEUT.Meshing.MeshBoundary(mesh);
 

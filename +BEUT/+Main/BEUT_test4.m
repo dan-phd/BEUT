@@ -1,14 +1,15 @@
-% BEUT - test 3 (roughly 2.5 hours)
+% BEUT - test 4
 % Region 1 = background
-% Region 2 and 3 = spatially distinct meshes
-% Compare BEUT with unmeshed background against UTLM with meshed background,
-% with different sizes of domain
+% Region 2 and 3 = spatially distinct shapes
+% Excite inside one shape with a point source and measure the field in the other shape, then compare speed and
+% convergence of BEUT against UTLM for different sizes of meshed domains
 global mu0 eps0;
 
 
 %% Load the geometry (along with dt, mu0 and eps0)
 filename_BEUT = 'cyl_res24_x2.mat';
-mesh_file = matfile([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename_BEUT]);
+mesh_file = matfile([fileparts(which...
+    ('BEUT.Meshing.load')) filesep 'meshes' filesep filename_BEUT]);
 dt_BEUT = mesh_file.dt;
 mu0 = mesh_file.mu0;
 eps0 = mesh_file.eps0;

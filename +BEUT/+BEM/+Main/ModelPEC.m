@@ -1,5 +1,4 @@
 %% 2D time domain BEM for cylindrical PEC
-clear all
 
 %% Parameters
 mu = 4*pi*10^-7;            % permeability of free space

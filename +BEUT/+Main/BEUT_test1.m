@@ -2,6 +2,11 @@
 % Region 1 = UTLM cylinder mesh of free space
 % Region 2 = free space BEM
 % Excite with a plane wave and see the wave pass straight through
+
+% NOTE: this is the only test in +BEUT/+Main that allows you to choose whether to use Matlab to compute the
+% BEM operators, the others will require using the C++ program
+use_Matlab_to_compute_operators = true;
+
 global mu0 eps0;
 
 
@@ -68,10 +73,46 @@ boundary_points = [1 3];
 mesh.plot_halfedge(observation_edges)
 
 
-%% MOT
-operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename]);
+%% Compute or load the operators
+if use_Matlab_to_compute_operators
+    
+    % Compute operators
+    outer_points = 25;
+    inner_points = 26;
+    outer_points_sp = 5*outer_points;
+    inner_points_sp = 5*outer_points+1;
+    
+    Lagrange_degree = 1;
+    cheat = true;
+    
+    Zmatrix = BEUT.BEM.ZMatrices(N_T,dt,boundary.dual,c(1));
+    
+    Zmatrix.basis_function_Z = BEUT.BEM.BasisFunction.createDualSquare(boundary.dual,false);
+    Zmatrix.basis_function_S = BEUT.BEM.BasisFunction.createDualHat(boundary.dual,false);
+    Zmatrix.test_function_Z = BEUT.BEM.BasisFunction.createDualSquare(boundary.dual,true);
+    Zmatrix.test_function_S = BEUT.BEM.BasisFunction.createDualHat(boundary.dual,true);
+    
+    timeBasis = BEUT.BEM.LagrangeInterpolator(dt,Lagrange_degree);
+    Zmatrix.timeBasis_D = timeBasis;
+    Zmatrix.timeBasis_Nh = int(timeBasis);
+    Zmatrix.timeBasis_Ns = diff(timeBasis);
+    Zmatrix.outer_points_sp = outer_points_sp;
+    Zmatrix.inner_points_sp = inner_points_sp;
+    Zmatrix.outer_points = outer_points;
+    Zmatrix.inner_points = inner_points;
+    
+    tic
+    operator_file.N_T = N_T;
+    [operator_file.S,operator_file.D,operator_file.Dp,Nh,Ns] = Zmatrix.compute(cheat);
+    operator_file.N = Nh + Ns/c(1)^2;
+    toc
+    
+else
+    operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename]);
+end
+
 mesh = BEUT.Main.MOT(mesh, boundary, operator_file, observation_edges,...
-    time, mu(1), Ez_i, Hxy_i);
+        time, mu(1), Ez_i, Hxy_i);
 
 
 %% Plot results against incident waves (analytic result)

@@ -1,8 +1,7 @@
 % BEUT - test 3
 % Region 1 = meshed free space background
 % Region 2 = dielectric cylinder
-% Excite with a plane wave using BEUT and UTLM, and compare numerical
-% results with analytical solution
+% Excite with a plane wave using BEUT and UTLM, and compare numerical results with analytical solution
 global mu0 eps0;
 
 
