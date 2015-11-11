@@ -1,6 +1,6 @@
 % Compare operator matrices obtained by Matlab code with those obtain with the C++ code
 
-filename = 'cyl_res21.mat';
+filename = 'cyl_res138_x2.mat';
 N_T = 10;
 
 %% Compute operator matrices using Matlab
@@ -12,7 +12,7 @@ outer_points_sp = 5*outer_points;
 inner_points_sp = 5*outer_points+1;
 
 Lagrange_degree = 1;
-cheat = true;
+cheat = false;
 
 Zmatrix = BEUT.BEM.ZMatrices(N_T,dt,boundary,c);
 

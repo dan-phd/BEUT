@@ -13,7 +13,7 @@ ymin = -10; ymax = 10;
 BoundingBox = [xmin,ymin;xmax,ymax];
 
 % Define discretisation by number of wavelengths
-num_wavelengths_per_radius = 0.3;
+num_wavelengths_per_radius = 2;
 largest_wavelength = 1/radius/num_wavelengths_per_radius;
 initialEdgeLength = largest_wavelength/11;    % <wavelength/10
 N_V = round((2*pi)/acos(1-0.5*(initialEdgeLength/radius)^2));
@@ -154,7 +154,7 @@ fnum = ones(1,numberFaces);     % all traingle faces belong to the same material
 
 %% Save for Matlab for C++ code compatibility
 mesh = BEUT.UTLM.UTLMClass(v,f,fnum);
-mesh.check_mesh;                    % look for a ratio below 10, ideally below 5
+mesh.checkMesh;                    % look for a ratio below 10, ideally below 5
 mesh.plot_mesh;
 
 file_name = [filename num2str(numel(mesh.mesh_boundary)) '.mat'];

@@ -54,11 +54,10 @@ classdef ZMatrices
         end
         
         
-        % Loop over all time and spatial points in the domain and find the
-        % Gaussian quadrature tables associated with each edge interaction.
-        % Then loop over all spatial points in the domain and, using the
-        % Basis functions, determine how to combine the elements from the 
-        % Gaussian quadrature coefficient table
+        % Loop over all time and spatial points in the domain and find the Gaussian quadrature tables
+        % associated with each edge interaction. Then loop over all spatial points in the domain and, using
+        % the Basis functions, determine how to combine the elements from the Gaussian quadrature coefficient
+        % table
         function [S,D,Dp,Nh,Ns] = compute( obj, cheat )
             
             if nargin<2, cheat=false; end

@@ -1,7 +1,7 @@
 % Load a mesh from file, extract materials from it, plot it, and then save it as a halfedge mesh we can use
 
 %% Load mesh
-mesh_name = 'test5_2000'; extension = 'mphtxt';
+mesh_name = 'cyl_res20'; extension = 'ele';
 [v,f,fnum]=BEUT.Meshing.load(...
     [fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep...
     'unconverted' filesep mesh_name '.' extension]);
@@ -17,11 +17,12 @@ mesh_name = 'test5_2000'; extension = 'mphtxt';
 
 %% Convert to halfedge mesh
 mesh = BEUT.UTLM.UTLMClass(v,f,fnum);
-mesh.check_mesh;                    % look for a ratio below 10, ideally below 5
+mesh.checkMesh;                    % look for a ratio below 10, ideally below 5
 mesh.plot_mesh;
 
 filename = [mesh_name '.mat'];
 c_file = [BEUT.CFolder filesep 'input' filesep filename];
 mat_file = [fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename];
 
-BEUT.Meshing.save( mesh, mat_file, '' );
+use_dual = true;
+BEUT.Meshing.save( mesh, use_dual, mat_file, c_file );
