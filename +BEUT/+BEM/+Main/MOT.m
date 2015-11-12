@@ -1,5 +1,5 @@
 function [ x ] = MOT( Z, V )
-%Marching-on-in-time function to compute x given Z and V
+%Marching-on-in-time function to compute x given Z and V, where {V}={Z}[x]
 
 Z0_inv = inv(Z(:,:,1));
 

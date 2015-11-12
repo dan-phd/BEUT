@@ -2,7 +2,7 @@
 domain_X = -3:0.3:3;
 domain_Y = -3:0.3:3;
 [X,Y] = meshgrid(domain_X,domain_Y);
-fieldN_T = 80:83;
+fieldN_T = 1300:1600;
 
 % Vectorise all points in grid
 rho = [X(:) Y(:)];
@@ -10,7 +10,7 @@ rho = [X(:) Y(:)];
 material_vertices = vertcat(boundary.halfedges.a);
 
 % Compute Z matrices
-zm2 = BEUT.BEM.ZMatrices(N_T,dt,boundary.halfedges,c(1));
+zm2 = BEUT.BEM.ZMatrices(N_T,dt,boundary.halfedges,c0);
 zm2.basis_function_Z = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,true);
 zm2.basis_function_S = BEUT.BEM.BasisFunction.createHat(boundary.halfedges,false);
 timeBasis = BEUT.BEM.LagrangeInterpolator(dt,1);
@@ -21,10 +21,10 @@ zm2.inner_points = 4;
 tic
 [S,D,Dp,Nh,Ns] = zm2.computeField(rho, fieldN_T);
 toc
-N = Nh+Ns/c(1)^2;
+N = Nh+Ns/c0^2;
 
-Z = [D         -S*mu(1);...
-     -N/mu(1)  -Dp     ];
+Z = [D       -S*mu0;...
+     -N/mu0  -Dp     ];
 x = [ M_TM; J_TM];
 
 
@@ -41,7 +41,7 @@ scatter3(material_vertices(:,1),material_vertices(:,2),above_animation,10,...
 %}
 
 %% animate
-%
+%{
 E_s = zeros([size(X) numel(fieldN_T)]);
 for i=fieldN_T
     rhs = Z(:,:,i)*x(:,i);

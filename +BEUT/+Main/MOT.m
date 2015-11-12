@@ -1,4 +1,4 @@
-function mesh = MOT( mesh, boundary, operator_file, observation_points, time,...
+function [mesh, M_TM, J_TM] = MOT( mesh, boundary, operator_file, observation_points, time,...
     material_param, Ez_i, Hxy_i, V_source, source_he  )
 %BEUT MOT
 
@@ -55,7 +55,8 @@ Z0_inv = inv(Z(:,:,1));
 
 % Initialisation
 mesh.reset;
-V = zeros(boundary.N_V,N_T);
+M_TM = zeros(boundary.N_V,N_T);
+J_TM = zeros(boundary.N_V,N_T);
 unknown = zeros(2*boundary.N_V,N_T);
 V_open = zeros(boundary.N_V,N_T);
 I_closed = zeros(boundary.N_V,N_T);
@@ -94,11 +95,12 @@ for j=1:N_T
     end
     
     unknown(:,j) = Z0_inv * rhs_vec;
-    V(:,j) = unknown(1:N_V,j);
+    M_TM(:,j) = unknown(1:N_V,j);           % E_z = M = V
+    J_TM(:,j) = -unknown(N_V+1:2*N_V,j);    % n x H_xy = -J = I
     
     
     % Plug back into TLM
-    mesh.connect(j,V(:,j));
+    mesh.connect(j,M_TM(:,j));
     
 
     % Point source excitation from TLM (if specified)
