@@ -54,9 +54,9 @@ for k=1:N_T
     V_int(k) = gpw.evalIntegral((k-1)*dt,dt); 
 end
 figure; plot(time,V_diff,time(2:end),diff(V)/dt,'.');
-legend('Derivative from class','Matlab calculated')
+legend('Derivative using class','Derivative using Matlab function')
 figure; plot(time,V_int,time,cumtrapz(time,V),'.')
-legend('Integral from class','Matlab calculated')
+legend('Integral using class','Integral using Matlab function')
 
 
 %% Animate in 1D

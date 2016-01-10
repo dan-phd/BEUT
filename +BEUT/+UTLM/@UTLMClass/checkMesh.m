@@ -13,6 +13,10 @@ for he_ind = 1:obj.nH
     % Opposite halfedge index
     opp_he = obj.halfedges(he_ind).flip;
     
+    % set the color number
+    colnum = obj.faces(obj.halfedges(he_ind).face).fnum;
+    colnum = mod(colnum-1,size(obj.color,1))+1;
+    
     % If we're not on a boundary edge...
     if  opp_he~=0
         
@@ -20,14 +24,14 @@ for he_ind = 1:obj.nH
         if ~(obj.faces(obj.halfedges(he_ind).face).fnum...
                 ==obj.faces(obj.halfedges(opp_he).face).fnum)
             
-            plot_voronoi(CC,obj.halfedges(he_ind).midpoint,obj.color(obj.faces(obj.halfedges(he_ind).face).fnum,:));
+            plot_voronoi(CC,obj.halfedges(he_ind).midpoint,obj.color(colnum,:));
             
         else
             
             % The link length is simply half the distance from circumcenter to circumcenter
             NCC = obj.halfedges(opp_he).circumcenter;     % neighbour circumcenter
             
-            plot_voronoi(CC,NCC,obj.color(obj.faces(obj.halfedges(he_ind).face).fnum,:));
+            plot_voronoi(CC,NCC,obj.color(colnum,:));
             
         end
         
@@ -39,7 +43,7 @@ for he_ind = 1:obj.nH
         
     else        % If we are linking to the boundary...
         
-        plot_voronoi(CC,obj.halfedges(he_ind).midpoint,obj.color(obj.faces(obj.halfedges(he_ind).face).fnum,:));
+        plot_voronoi(CC,obj.halfedges(he_ind).midpoint,obj.color(colnum,:));
         
         % save minimum link length
         if obj.halfedges(he_ind).linkLength<min_length
@@ -49,7 +53,7 @@ for he_ind = 1:obj.nH
         
     end
     
-    plot_voronoi(CC,obj.halfedges(he_ind).midpoint,obj.color(obj.faces(obj.halfedges(he_ind).face).fnum,:));
+    plot_voronoi(CC,obj.halfedges(he_ind).midpoint,obj.color(colnum,:));
     
     % save minimum link length
     if obj.halfedges(he_ind).linkLength<min_length

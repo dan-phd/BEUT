@@ -1,13 +1,13 @@
 % Compare operator matrices obtained by Matlab code with those obtain with the C++ code
 
-filename = 'cyl_res138_x2.mat';
+filename = 'cyl_res21.mat';
 N_T = 10;
 
 %% Compute operator matrices using Matlab
 load([BEUT.CFolder '\input\' filename]);
 
 outer_points = 25;
-inner_points = 26;
+inner_points = outer_points+1;
 outer_points_sp = 5*outer_points;
 inner_points_sp = 5*outer_points+1;
 
@@ -44,8 +44,9 @@ toc
 
 
 %% Compare with operator matrices obtained using C++
-cfile = matfile(strcat('C:\Users\eexds7\Documents\Visual Studio 2013\Projects\2DTDBEM\2DTDBEM\results\',filename));
-assert(N_T<=cfile.N_T,'Chosen N_T must be less than or equal to the number of timesteps computed in the operators');
+cfile = matfile([BEUT.CFolder '\results\' filename]);
+assert(N_T<=cfile.N_T,['Chosen N_T must be less than or equal to the number of timesteps'...
+    'computed in the file']);
 N2 = cfile.N(:,:,1:N_T);
 S2 = cfile.S(:,:,1:N_T);
 D2 = cfile.D(:,:,1:N_T);

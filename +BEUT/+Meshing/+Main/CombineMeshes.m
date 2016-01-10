@@ -2,8 +2,8 @@
 
 path = [fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep];
 
-filename1 = [path 'cyl_res138.mat'];
-filename2 = [path 'cyl_res138.mat'];
+filename1 = [path 'cyl_res21.mat'];
+filename2 = [path 'cyl_res21.mat'];
 [v1,f1]=BEUT.Meshing.load(filename1);
 [v2,f2]=BEUT.Meshing.load(filename2);
 

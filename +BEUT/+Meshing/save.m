@@ -31,7 +31,7 @@ end
 c = 1/sqrt(mu0*eps0);
 
 % Check dt (if given) < minLinklength*sqrt(2*eps0*mu0)
-dt_ = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /1.6;
+dt_ = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /1.4;
 if nargin<5
     dt = dt_;
 else

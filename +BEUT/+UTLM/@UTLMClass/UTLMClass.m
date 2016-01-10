@@ -13,8 +13,9 @@ classdef UTLMClass < BEUT.Meshing.HalfedgeMesh & handle
         
         reflection_coeff;
         Y_boundary;
+        PEC_boundary;
         
-        V_open; I_open;
+        V_open; I_closed;
     end
     
     methods
@@ -68,40 +69,6 @@ classdef UTLMClass < BEUT.Meshing.HalfedgeMesh & handle
             end
             
         end % excite_E
-        
-        
-        % Excite the source halfedge as a magentic field source
-        function excite_H(obj, sourceEdges, V_source)
-            
-            for edge = 1:numel(sourceEdges)
-                
-                % current halfedge index
-                he_ind = sourceEdges(edge);
-                
-                % Add source excitation
-                obj.halfedges(he_ind).V_linki = obj.halfedges(he_ind).V_linki + V_source*obj.halfedges(he_ind).Y_link;
-                obj.halfedges(he_ind).V_stub = obj.halfedges(he_ind).V_stub + V_source*obj.halfedges(he_ind).Y_stub;
-                
-            end
-            
-        end % excite_H
-        
-        
-        % Excite  the source halfedge and scale by edge_length/Y (J source)
-        function excite_J(obj, sourceEdges, V_source)
-            
-            for edge = 1:numel(sourceEdges)
-                
-                % current halfedge index
-                he_ind = sourceEdges(edge);
-                
-                % Add source excitation
-                obj.halfedges(he_ind).V_linki = obj.halfedges(he_ind).V_linki + V_source * ...
-                    obj.halfedges(he_ind).edgeLength/obj.halfedges(he_ind).Y_link;
-                
-            end
-            
-        end % excite_J
         
         
     end % methods

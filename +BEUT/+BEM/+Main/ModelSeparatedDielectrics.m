@@ -1,13 +1,10 @@
 %% 2D time domain BEM for 2 separated dielectrics
-
-%% Parameters
-mu0 = 4e-7*pi;               % permeability of free space
-eps0 = 8.854187817e-12;      % permittivity of free space
-c0 = 1/sqrt(mu0*eps0);       % propagation speed inside vacuum
-
+clear all;
 
 %% Load the geometry
-load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res21rec_res42_combined.mat']);
+filename = 'cyl_res21_x2';
+
+load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename '.mat']);
 boundary=BEUT.Meshing.MeshBoundary(mesh);
 N_V = boundary.N_V;
 
@@ -26,12 +23,13 @@ end
 region{1} = vertcat(boundary.halfedges.shape)==1;
 region{2} = vertcat(boundary.halfedges.shape)==2;
 region{3} = region{1} | region{2};
-cheat(1) = true;    % only the 1st shape is a cylinder (so we can use the cheat)
-cheat(2) = false;
+cheat(1) = true;    % we can only use the cheat on cylinders with equal edge lengths
+cheat(2) = true;
 cheat(3) = false;
 
 % Temporal parameters
-N_T = 300;
+N_T = 2000;
+c0 = 1/sqrt(mu0*eps0);
 f_max = c0;
 dt = 1/(8*f_max);
 time = 0 : dt : N_T*dt-dt;
@@ -39,8 +37,8 @@ time = 0 : dt : N_T*dt-dt;
 
 %% RHS setup
 %
-T = 5/f_max;           % width of pulse
-t0 = 1.5;              % start time (relative to width)
+T = 5/f_max;         % width of pulse
+t0 = 1;              % start time (relative to width)
 direction = [1 0];
 
 % Create excitation in each region
@@ -65,12 +63,6 @@ end
 
 %% Computation of operators
 
-% Create basis functions
-for i=1:boundary.num_shapes+1
-    hat_function(i) = BEUT.BEM.BasisFunction.createHat(boundary.halfedges(region{i}),false);
-    square_function(i) = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges(region{i}),true);
-end
-
 % Gaussian quadrature points and temporal degree
 gauss_points_m = 4;
 gauss_points_n = 5;
@@ -79,32 +71,36 @@ inner_points_sp = 51;
 degree = 1;
 
 % Compute Z matrices
-zm = BEUT.BEM.ZMatrices(N_T,dt,boundary.halfedges);
-    
-% Basis and test functions applied to each segment
-% S = transverse plane, Z = z-directed
-zm.basis_function_Z = square_function;
-zm.basis_function_S = hat_function;
-zm.test_function_Z = square_function;
-zm.test_function_S = hat_function;
-
-% Lagrange interpolators (temporal basis functions)
-timeBasis = BEUT.BEM.LagrangeInterpolator(dt,degree);
-zm.timeBasis_D = timeBasis;
-zm.timeBasis_Nh = int(timeBasis);
-zm.timeBasis_Ns = diff(timeBasis);
-
-zm.outer_points = gauss_points_m;
-zm.inner_points = gauss_points_n;
-zm.outer_points_sp = outer_points_sp;
-zm.inner_points_sp = inner_points_sp;
-    
 tic
 for i=1:boundary.num_shapes+1
     
+    % Create basis functions
+    hat_function(i) = BEUT.BEM.BasisFunction.createHat(boundary.halfedges(region{i}),false);
+    square_function(i) = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges(region{i}),true);
+    
+    zm = BEUT.BEM.ZMatrices(N_T,dt,boundary.halfedges(region{i}));
+    
+    % Lagrange interpolators (temporal basis functions)
+    timeBasis = BEUT.BEM.LagrangeInterpolator(dt,degree);
+    zm.timeBasis_D = timeBasis;
+    zm.timeBasis_Nh = int(timeBasis);
+    zm.timeBasis_Ns = diff(timeBasis);
+    
+    zm.outer_points = gauss_points_m;
+    zm.inner_points = gauss_points_n;
+    zm.outer_points_sp = outer_points_sp;
+    zm.inner_points_sp = inner_points_sp;
+
+    % Apply basis and test functions to each segment
+    % S = transverse plane, Z = z-directed
+    zm.basis_function_Z = square_function(i);
+    zm.basis_function_S = hat_function(i);
+    zm.test_function_Z = square_function(i);
+    zm.test_function_S = hat_function(i);
+    
     zm.c = c(i);
     
-    [S{i},D{i},Dp{i},Nh,Ns] = zm.compute(cheat);
+    [S{i},D{i},Dp{i},Nh,Ns] = zm.compute(cheat(i));
     N{i} = Nh + Ns/c(i)^2;
     
 end
@@ -170,7 +166,7 @@ J = -unknown(N_V+1:2*N_V,:); % n x H_xy = -J
 
 
 %% Plot current density at various points in the mesh
-positions = 1:10:N_V;
+positions = 5:10:N_V;
 boundary.plot(positions)
 for i=1:numel(positions), points_to_plot(i).point=positions(i); end
 time_to_plot=time(1:100);

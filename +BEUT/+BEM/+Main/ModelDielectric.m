@@ -1,13 +1,10 @@
 %% 2D time domain BEM for cylindrical dielectric
-
-%% Parameters
-mu0 = 4e-7*pi;               % permeability of free space
-eps0 = 8.854187817e-12;      % permittivity of free space
-c0 = 1/sqrt(mu0*eps0);       % propagation speed inside vacuum
-
+clear all;
 
 %% Load the geometry
-load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res21.mat']);
+filename = 'cyl_res21';
+
+load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename '.mat']);
 boundary=BEUT.Meshing.MeshBoundary(mesh);
 radius=max(range(vertcat(boundary.halfedges.a)))/2;
 N_V = boundary.N_V;
@@ -26,10 +23,11 @@ for i=1:boundary.num_shapes+1
 end
 
 % Temporal parameters
-N_T = 300;
-f_max = c0;
+N_T = 400;
+f_max = c(1);
 dt = 1/(8*f_max);
 time = 0 : dt : N_T*dt-dt;
+mesh.dt = dt;
 
 
 %% RHS setup
@@ -107,7 +105,7 @@ rhsCalc.test_function = hat_function;
 Hxy_i = rhsCalc.compute(true) / eta(1);
 
 % MOT
-Z = [-D{1}-D{2}       (S{1}+S{2})*mu(1);...
+Z = [-D{1}-D{2}         (S{1}+S{2})*mu(1);...
      (N{1}+N{2})/mu(1)  Dp{1}+Dp{2}];
 rhs = [ Ez_i; Hxy_i];
 unknown = BEUT.BEM.Main.MOT(Z, rhs);
@@ -116,7 +114,7 @@ unknown = BEUT.BEM.Main.MOT(Z, rhs);
 M_TM = unknown(1:N_V,:);        % E_z = M
 J_TM = -unknown(N_V+1:2*N_V,:); % n x H_xy = -J
 
-% Plot current density at shadow side and at exposed side of cylinder
+%% Plot current density at shadow side and at exposed side of cylinder
 points_to_plot(1).name='Exposed side'; points_to_plot(1).point=exposed_side;
 points_to_plot(2).name='Shadow side'; points_to_plot(2).point=shadow_side;
 BEUT.BEM.Main.plotCurrentDensityInTime(time, Ez_i, points_to_plot); title('Ez_i');
@@ -141,43 +139,24 @@ BEUT.BEM.Main.plotCurrentDensityInFrequency(c(1), M_FFT, omega, A, limit, points
 BEUT.BEM.Main.plotCurrentDensityAtOneFrequency( N_V, M_FFT, omega, probe_freq_idx, analytic_M_FFT )
 
 
-%% TE
+%% Output file to compute scattered field in C++
+% then run the C++ code using flags: -fcyl_res21_scattered -t400 -S
+domain_X = [-3:0.1:3];
+domain_Y = [-3:0.1:3];
+[X,Y] = meshgrid(domain_X,domain_Y);
+x_coords = X(:); y_coords = Y(:);
+dual = false;
+c_file = [BEUT.CFolder filesep 'input' filesep filename '_scattered.mat'];
+in = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords, M_TM, J_TM,dual,c_file);
+
+%% Once C++ has computed the scattered field operators, run this section to animate
 %{
-% RHS vector calculation
-rhsCalc.test_function = square_function;
-Hz_i = rhsCalc.compute(false) / eta(1);
-rhsCalc.test_function = hat_function;
-Exy_i  = rhsCalc.compute(true);
+operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scattered.mat']);
+E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in );
 
-% MOT
-Z = [-D{1}-D{2}         -(S{1}+S{2})*eps(1);...
-     -(N{1}+N{2})/eps(1)  Dp{1}+Dp{2}];
-rhs_vec = [ Hz_i; Exy_i ];
-unknown = BEUT.BEM.Main.MOT(Z, rhs_vec);
-
-% split m and j
-J_TE = unknown(1:N_V,:);        % H_z
-M_TE = -unknown(N_V+1:2*N_V,:); % n x E_xy
-
-%% Plot current density at shadow side and at exposed side of cylinder
-BEUT.BEM.Main.plotCurrentDensityInTime(time, Exy_i, points_to_plot); title('Exy_i');
-BEUT.BEM.Main.plotCurrentDensityInTime(time, M_TE, points_to_plot); title('M');
-BEUT.BEM.Main.plotCurrentDensityInTime(time, Hz_i, points_to_plot); title('Hz_i');
-BEUT.BEM.Main.plotCurrentDensityInTime(time, J_TE, points_to_plot); title('J');
-
-% Calculate current density in frequency domain at all points on circle
-[J_FFT,omega,A,limit] = BEUT.BEM.Main.findFrequencyDomainCurrentDensity( time,J_TE,gpw,c(1) );
-
-% Error between the analytical and numerical solutions
-analytic = BEUT.BEM.Analytical.AnalyticalDielectricCylinder(N_V,radius,omega,mu0,eps0);
-analytic.eps_r=eps_r(2); analytic.mu_r=mu_r(2);
-[~,analytic_J_f] = analytic.calcSurfaceCurrents;
-analytic_J_f = analytic_J_f/eta(1);
-BEUT.relError(abs(J_FFT(:,2:limit)),abs(analytic_J_f(:,2:limit)) );
-
-% Frequency domain plots
-probe_freq_idx = 2;
-BEUT.BEM.Main.plotCurrentDensityInFrequency(c(1), J_FFT, omega, A, limit, points_to_plot, analytic_J_f)
-BEUT.BEM.Main.plotCurrentDensityAtOneFrequency( N_V, J_FFT, omega, probe_freq_idx, analytic_J_f )
-
+% animate
+material_vertices = vertcat(boundary.halfedges.a);
+BEUT.animate_fields(2,'domain',X,Y,...
+    'animation',E_s,...
+    'overlay',material_vertices,'dimensions',2);
 %}

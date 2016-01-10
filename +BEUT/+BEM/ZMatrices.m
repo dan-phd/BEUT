@@ -170,6 +170,7 @@ classdef ZMatrices
                             
                             % When dealing with singularities at self patch and neighbouring
                             % edges, increase number of quadrature points
+                            % TODO: this will change for dual basis or functions spanning more than 2 edges?
                             if n==mod(m,obj.N_E)+1 || n==m || n==mod(m-2,obj.N_E)+1
                                 
                                 [coeffs_nh{m,n},coeffs_ns{m,n},coeffs_d{m,n},coeffs_s{m,n},coeffs_dp{m,n}] = ...
@@ -316,70 +317,49 @@ classdef ZMatrices
         end  % compute
         
         
-        % TODO: find scattered field in a grid of points
-        function [S,D,Dp,Nh,Ns] = computeField( obj, rho, timesteps )
-            
-            if nargin < 3
-                timesteps = 1:obj.N_T;
-            end
+        % Find scattered field in a grid of points, rho
+        function [S,D] = computeField( obj, rho )
             
             N_points = size(rho,1);
             
             % parameterise each segment for Gaussian quadrature integration
             [si,wi] = BEUT.BEM.lgquad(obj.inner_points,[0 1]);
             
-            % Find divergence of transverse basis and test functions
-            basis_function_d = BEUT.BEM.BasisFunction.divergence(obj.basis_function_S, obj.geom_obj);
-            
-            % Concatenate the basis and test coefficients and find the maximum degree
+            % Concatenate the basis coefficients and find the maximum degree
             basis_coeffs_Z = vertcat(obj.basis_function_Z.pol{:});
             max_deg_basis_Z = max(vertcat(basis_coeffs_Z.degree));
             basis_coeffs_S = vertcat(obj.basis_function_S.pol{:});
             max_deg_basis_S = max(vertcat(basis_coeffs_S.degree));
-            basis_coeffs_d = vertcat(basis_function_d.pol{:});
-            max_deg_basis_d = max(vertcat(basis_coeffs_d.degree));
             
             % Make the gaussian quadrature tables, ready to multiply with spatial basis functions
-            Gcoeffs_ZZ = BEUT.BEM.createGaussianCoeffs(1,1,si,wi,0,max_deg_basis_Z);
-            Gcoeffs_ZS = BEUT.BEM.createGaussianCoeffs(1,1,si,wi,0,max_deg_basis_S);
-            Gcoeffs_SZ = BEUT.BEM.createGaussianCoeffs(1,1,si,wi,0,max_deg_basis_Z);
-            Gcoeffs_SS = BEUT.BEM.createGaussianCoeffs(1,1,si,wi,0,max_deg_basis_S);
-            Gcoeffs_dd = BEUT.BEM.createGaussianCoeffs(1,1,si,wi,0,max_deg_basis_d);
+            Gcoeffs_ZZ = BEUT.BEM.createGaussianCoeffs(0.5,1,si,wi,0,max_deg_basis_Z);
+            Gcoeffs_ZS = BEUT.BEM.createGaussianCoeffs(0.5,1,si,wi,0,max_deg_basis_S);
             
             % Get basis function index table to determine which edges interact
             idx_basis_Z = obj.basis_function_Z.idx_table;
             idx_basis_S = obj.basis_function_S.idx_table;
-            idx_basis_d = basis_function_d.idx_table;
-            assert(all([size(idx_basis_S,1) size(idx_basis_d,1)]...
-                == size(idx_basis_Z,1)),'basis functions must act over the same geometry');
+            assert(size(idx_basis_S,1)== size(idx_basis_Z,1),...
+                'basis functions must act over the same geometry');
             obj.N_F = size(idx_basis_Z,1);
             
             % Containers for operators (2D regions with 3rd dimension varying with time)
-            field_N_T = numel(timesteps);
-            S  = zeros(N_points, obj.N_F, field_N_T);
-            D  = zeros(N_points, obj.N_F, field_N_T);
-            Dp = zeros(N_points, obj.N_F, field_N_T);
-            Ns = zeros(N_points, obj.N_F, field_N_T);
-            Nh = zeros(N_points, obj.N_F, field_N_T);
+            S  = zeros(N_points, obj.N_F, obj.N_T);
+            D  = zeros(N_points, obj.N_F, obj.N_T);
             
-            % Pad the interpolators so the sizes match Nh (hypersingular contribution of N operator)
-            [obj.timeBasis_Ns, obj.timeBasis_D] = padCoeffs(obj.timeBasis_Nh, obj.timeBasis_Ns, obj.timeBasis_D);
+            % Pad the interpolators so the sizes match
+            [obj.timeBasis_Ns, obj.timeBasis_D] = padCoeffs(obj.timeBasis_Ns, obj.timeBasis_Ns, obj.timeBasis_D);
             
             % Loop over all segments so they all act as source for all time steps
             wait=waitbar(0,'Operator calculations...');   % status bar
-            for k = timesteps
+            for k = 1:obj.N_T
                 
                 % Shifted time basis - shift and flip the time basis functions to get T(k*dt-t)
-                obj.shiftedTB_D  = obj.timeBasis_D. translate((k-1)*obj.dt,-1);
-                obj.shiftedTB_Nh = obj.timeBasis_Nh.translate((k-1)*obj.dt,-1);
+                obj.shiftedTB_D  = obj.timeBasis_D.translate((k-1)*obj.dt,-1);
                 obj.shiftedTB_Ns = obj.timeBasis_Ns.translate((k-1)*obj.dt,-1);
                 
                 % Containers for operator coefficients
-                coeffs_nh = num2cell(zeros(N_points, obj.N_E));
-                coeffs_ns = num2cell(zeros(N_points, obj.N_E));
                 coeffs_d = num2cell(zeros(N_points, obj.N_E));
                 coeffs_s = num2cell(zeros(N_points, obj.N_E));
-                coeffs_dp = num2cell(zeros(N_points, obj.N_E));
                 
                 for m = 1:N_points
                     
@@ -392,16 +372,12 @@ classdef ZMatrices
                         obj.a_n = obj.geom_obj(n).a;
                         obj.b_n = obj.geom_obj(n).b;
                         obj.l_n = obj.geom_obj(n).l;
-                        obj.t_n = obj.geom_obj(n).t;
                         obj.n_n = obj.geom_obj(n).n;
                         
-                        [coeffs_nh{m,n},coeffs_ns{m,n},coeffs_d{m,n},coeffs_s{m,n},coeffs_dp{m,n}] =...
+                        [coeffs_d{m,n},coeffs_s{m,n}] =...
                             Z_calc_field( obj,...
                             rho_m, si,...
-                            Gcoeffs_dd,...
-                            Gcoeffs_SZ,...
                             Gcoeffs_ZS,...
-                            Gcoeffs_SS,...
                             Gcoeffs_ZZ);
                         
                     end % n
@@ -418,29 +394,23 @@ classdef ZMatrices
                         % current basis edges
                         index_basis_Z = idx_basis_Z(q,:);
                         index_basis_S = idx_basis_S(q,:);
-                        index_basis_d = idx_basis_d(q,:);
                         
                         % functions on current basis edges
                         BFZ = obj.basis_function_Z.pol(:,index_basis_Z);
                         BFS = obj.basis_function_S.pol(:,index_basis_S);
-                        BFd = basis_function_d.pol(:,index_basis_d);
                         
                         % create array of function coeffs
                         BCZ = create_function_coeffs_tbl(BFZ);
                         BCS = create_function_coeffs_tbl(BFS);
-                        BCd = create_function_coeffs_tbl(BFd);
                         
                         % Combine contributions
-                        Ns(p,q,k) = combine_contributions(coeffs_ns,p,index_basis_S,1,BCS);
-                        Nh(p,q,k) = combine_contributions(coeffs_nh,p,index_basis_d,1,BCd);
                         S(p,q,k)  = combine_contributions(coeffs_s, p,index_basis_Z,1,BCZ);
-                        Dp(p,q,k) = combine_contributions(coeffs_dp,p,index_basis_Z,1,BCZ);
                         D(p,q,k)  = combine_contributions(coeffs_d, p,index_basis_S,1,BCS);
                         
                     end
                 end
                 
-                waitbar(k/field_N_T)
+                waitbar(k/obj.N_T)
             end % k
             close(wait)
             
@@ -525,8 +495,8 @@ classdef ZMatrices
         
         
         % Computation of single elements of all operator matrices
-        function [coeffs_nh,coeffs_ns,coeffs_d,coeffs_s,coeffs_dp] = Z_calc_field( obj,...
-                rho_m, s_i,G_dd,G_SZ,G_ZS,G_SS,G_ZZ )
+        function [coeffs_d,coeffs_s] = Z_calc_field( obj,...
+                rho_m, s_i,G_ZS,G_ZZ )
             
             % Find inner and outer Gaussian quadrature points
             inner_quad_points = numel(s_i);
@@ -534,33 +504,26 @@ classdef ZMatrices
             % Make rho_n a vector of inner Gaussian quadrature points along source edge
             rho_n = bsxfun(@plus, obj.a_n, s_i*(obj.b_n-obj.a_n));
             rho_n = reshape(rho_n,[1, inner_quad_points, 2]);
+            rho_m = reshape(rho_m,[1, 1, 2]);
             
             % P is an array of distances from rho_n to observation point, rho_m
-            rho_mn = bsxfun(@minus,rho_m',rho_n);
+            rho_mn = bsxfun(@minus,rho_m,rho_n);
             P = sqrt(sum(rho_mn.^2,3));
             
             % Compute the temporal convolutions
-            [Fh, F, dF] = BEUT.BEM.computeConvolutions(P/obj.c, obj.shiftedTB_Nh, obj.shiftedTB_Ns, obj.shiftedTB_D);
-            dF=dF/obj.c;
+            [~, F, dF] = BEUT.BEM.computeConvolutions(P/obj.c, obj.shiftedTB_Ns, obj.shiftedTB_Ns, obj.shiftedTB_D);
             
             % dF/dn = n dot P/|P| * dF
             unit_P = bsxfun(@rdivide, rho_mn, P);                                       % P/|P|
             dF_dnp = sum(bsxfun(@times, reshape(-obj.n_n,[1,1,2]), unit_P),3) .* dF;    % dF/dn'
-            dF_dn = sum(unit_P,3) .* dF;      % dF/dn
             
             % Perform quadrature
-            nh_intF = sum(sum(bsxfun(@times,G_dd,Fh),1),2);
-            ns_intF = sum(sum(bsxfun(@times,G_SS,F),1),2);
-            dp_intF = sum(sum(bsxfun(@times,G_SZ,dF_dn),1),2);
             d_intF = sum(sum(bsxfun(@times,G_ZS,dF_dnp),1),2);
             s_intF = sum(sum(bsxfun(@times,G_ZZ,F),1),2);
             
             % Scale using edge lengths
-            coeffs_nh = shiftdim(nh_intF,2) * obj.l_n;
-            coeffs_ns = shiftdim(ns_intF,2) * obj.l_n;% * dot(obj.t_n,obj.t_n);
             coeffs_d  = shiftdim(d_intF,2)  * obj.l_n;
             coeffs_s  = shiftdim(s_intF,2)  * obj.l_n;
-            coeffs_dp = shiftdim(dp_intF,2) * obj.l_n;
             
         end % Z_calc_field
         

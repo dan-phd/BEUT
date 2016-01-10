@@ -1,4 +1,4 @@
-function [ Fh, Fs, dF ] = ComputeConvolutions( distances, intTB, TB, dTB )
+function [ Fh, Fs, dF ] = computeConvolutions( distances, intTB, TB, dTB )
 % Compute temporal convolutions for a temporal basis function and its integrated & derivative form
 % P is made up of a number of distances (from source to observation)
 % intTB, TB, dTB are the temporal basis functions for Fh, Fs, dF respectively

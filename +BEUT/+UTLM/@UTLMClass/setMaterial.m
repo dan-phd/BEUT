@@ -1,7 +1,7 @@
 function setMaterial(obj, relative_eps, relative_mu)
 % Set material of UTLM mesh
 
-% find number of materials
+% Find number of materials
 num_materials_eps = numel(relative_eps);
 num_materials_mu = numel(relative_mu);
 num_materials = max(num_materials_eps,num_materials_mu);
@@ -11,7 +11,7 @@ assert(num_materials_eps+num_materials_mu==2*num_materials ||...
 assert(num_materials==obj.num_materials || num_materials==obj.nF,...
     'number of materials must be equal to the number of faces or materials specified in the mesh');
 
-% retreive material parameters
+% Retreive material parameters
 if num_materials_eps==1
     if num_materials_mu==1
         for i=1:num_materials
@@ -39,7 +39,7 @@ else
 end
 
 
-% set each face's material parameters
+% Set each face's material parameters
 if num_materials>obj.num_materials
     
     % set each face individually
@@ -52,7 +52,7 @@ if num_materials>obj.num_materials
     
 else
     
-    % set each material
+    % Set each material
     for f = 1:obj.nF
         
         obj.faces(f).eps_r = eps_r(obj.faces(f).fnum);
@@ -62,4 +62,18 @@ else
     
 end
 
-end % setMaterial
+% Check for PEC (where relative_eps = inf)
+if any(isinf(relative_eps))
+    
+    PEC_material_number = isinf(relative_eps);
+    tmp = obj.material_boundaries(PEC_material_number);
+    tmp = horzcat(tmp{:});
+    
+    % Determine PEC boundaries that are not on the domain boundary
+    [~,loc] = ismember(tmp,obj.mesh_boundary);
+    
+    obj.PEC_boundary = horzcat(tmp(loc==0));
+    
+end
+
+end

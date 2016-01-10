@@ -3,11 +3,12 @@
 % NOTE: to hit more analytical resonant frequencies, increase the requency
 % spectrum of the excitation. However, increasing it too far will lead to 
 % artificial dispersion, only using a finer mesh will solve this.
+clear all;
 global mu0 eps0;
 
 
 %% Paramaters
-NT = 4000;
+NT = 10000;
 mu0 = 4*pi*10^-7;           % permeability of free space
 eps0 = 8.854187817e-12;     % permittivity of free space
 c0 = 1/sqrt(eps0*mu0);
@@ -15,7 +16,7 @@ c0 = 1/sqrt(eps0*mu0);
 
 %% Read mesh
 load([fileparts(which...
-    ('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res69.mat']);
+    ('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res21.mat']);
 radius=max(range(mesh.vertices))/2;
 
 
@@ -64,18 +65,3 @@ mesh = BEUT.UTLM.Main.run(mesh, NT, V_source, sourceEdges);
 
 %% Check results vs analytical solution
 BEUT.UTLM.Main.plotAgainstAnalyticalCylinder(mesh.fields.E_z,time,c0,radius);
-
-
-%% Plot time signal at a position on the boundary
-observation_point = mesh.mesh_boundary(1);
-mesh.plot_halfedge(observation_point)
-figure, plot(time,mesh.fields.E_z(observation_point,:))
-for i=1:numel(observation_point)
-    [~,~,~,names] = legend;
-    h = legend([names {sprintf('Halfedge %i',observation_point(i))}]);
-end
-
-
-%% Animate
-mesh.animate('E');
-

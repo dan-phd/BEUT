@@ -1,12 +1,12 @@
 classdef MeshBoundary < handle
     % Extract boundary edges of a halfedge mesh
-%     
-%     For example:
-% 
-%       [v,f]=BEUT.Meshing.loadMesh([fileparts(which('BEUT.Meshing.loadMesh'))...
-%             filesep 'meshes' filesep 'cyl_res21.mat']);
-%       geometry=BEUT.Meshing.MeshBoundary(BEUT.Meshing.HalfedgeMesh(v,f));
-%       geometry.plot
+    %
+    %     For example:
+    %
+    %       [v,f]=BEUT.Meshing.loadMesh([fileparts(which('BEUT.Meshing.loadMesh'))...
+    %             filesep 'meshes' filesep 'cyl_res21.mat']);
+    %       geometry=BEUT.Meshing.MeshBoundary(BEUT.Meshing.HalfedgeMesh(v,f));
+    %       geometry.plot
     
     properties
         
@@ -21,6 +21,15 @@ classdef MeshBoundary < handle
         
         N_V;         % number of vertices (equal to number of halfedges for closed surface)
         num_shapes;
+        
+        % color array for cycling through shape colors
+        color = [   0,      0.447,	0.741;...
+                    0.85,   0.325,  0.098;...
+                    0.929,  0.694,  0.125;...
+                    0.494,  0.184,  0.556;...
+                    0.466,  0.674,  0.188;...
+                    0.301,  0.745,  0.933;...
+                    0.635,  0.078,  0.184 ];
     end
     
     methods
@@ -50,28 +59,29 @@ classdef MeshBoundary < handle
                 
                 % normal = [dy, -dx] = [y2-y1, -x2+x1]
                 obj.halfedges(he).n = [obj.halfedges(he).b(2)-obj.halfedges(he).a(2),...
-                                      -obj.halfedges(he).b(1)+obj.halfedges(he).a(1)] / obj.halfedges(he).l;
+                    -obj.halfedges(he).b(1)+obj.halfedges(he).a(1)] / obj.halfedges(he).l;
             end
             
             % Determine spatially distint shape boundaries
-            shape_count = 1; he_found_for_this_material = 0;
-            for i=1:halfedge_mesh.num_materials
-                for he=1:obj.N_V
-                    
-                    if ~isempty(find(halfedge_mesh.material_boundaries{i}==boundary_halfedges(he), 1))
-                        he_found_for_this_material = 1;
-                        obj.halfedges(he).shape = shape_count;
-                    end
+            tail_vertices = halfedge_tbl.a;
+            head_vertices = halfedge_tbl.b;
+            shape_count = 1;
+            obj.halfedges(1).shape = 1;
+            for he=2:obj.N_V
+                
+                % link the current head vertex to the previous tail vertex
+                is_connected = all(tail_vertices(he,:)==head_vertices(he-1,:));
+                
+                % check if a new shape has to be mapped
+                if ~is_connected
+                    shape_count = shape_count+1;
                 end
                 
-                % increment number of shapes found so far
-                if he_found_for_this_material
-                    shape_count = shape_count+1;
-                    he_found_for_this_material = 0;
-                end
+                obj.halfedges(he).shape = shape_count;
+                
             end
             
-            obj.num_shapes = shape_count-1;
+            obj.num_shapes = shape_count;
             
             
             % Create dual mesh by splitting each edge in 2
@@ -121,7 +131,7 @@ classdef MeshBoundary < handle
             vertices = vertcat(obj.halfedges);
             a = vertcat(vertices.a);
             b = vertcat(vertices.b);
-                        
+            
             figure; axis equal;
             hold on
             % Plot edge lines
@@ -129,7 +139,7 @@ classdef MeshBoundary < handle
                 
                 vecx = [a(he_ind,1), b(he_ind,1)];
                 vecy = [a(he_ind,2), b(he_ind,2)];
-                plot(vecx,vecy,'LineWidth',4)
+                plot(vecx,vecy,'LineWidth',4,'Color',obj.color(obj.halfedges(he_ind).shape,:))
                 
             end
             % label halfedges at midpoints

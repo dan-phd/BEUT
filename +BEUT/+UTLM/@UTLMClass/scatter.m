@@ -21,7 +21,17 @@ for he_ind = 1:num_hes
     
     f = obj.halfedges(he_ind).face;         % face index
     
-    obj.halfedges(he_ind).V_linkr = V_0(f) - obj.halfedges(he_ind).V_linki;
+    % If this is a PEC node, simply reflect the signal
+    if isinf(obj.faces(f).eps_r)
+        
+        V_0(f) = 0; I_0(f) = 0;
+        obj.halfedges(he_ind).V_linkr = - obj.halfedges(he_ind).V_linki;
+        
+    else
+    
+        obj.halfedges(he_ind).V_linkr = V_0(f) - obj.halfedges(he_ind).V_linki;
+        
+    end
     
 end
 
@@ -30,18 +40,29 @@ end
 obj.I0(:,k) = I_0;
 obj.V0(:,k) = V_0;
 
+
+% Find open circuit voltage and closed circuit current
 obj.V_open = zeros(numel(obj.mesh_boundary),1);
 for i=1:numel(obj.mesh_boundary)
     
     he_ind = obj.mesh_boundary(i);
     
-    % Find open circuit voltage and closed circuit current
-    Vl = obj.halfedges(he_ind).V_linkr;
-    Vs = obj.halfedges(he_ind).V_stub;
-    Yl = obj.halfedges(he_ind).Y_link;
-    Ys = obj.halfedges(he_ind).Y_stub;
-    obj.I_open(i) =    2*Vl*Yl + 2*Vs*Ys;
-    obj.V_open(i) = ( (2*Vl*Yl + 2*Vs*Ys)/(Ys+Yl) );
+    % If this is a PEC node, simply reflect the signal
+    if isinf(obj.halfedges(he_ind).Y_stub)
+        
+        obj.I_closed(i) =  0;
+        obj.V_open(i) = obj.halfedges(he_ind).V_linkr;
+        
+    else
+        
+        Vl = obj.halfedges(he_ind).V_linkr;
+        Vs = obj.halfedges(he_ind).V_stub;
+        Yl = obj.halfedges(he_ind).Y_link;
+        Ys = obj.halfedges(he_ind).Y_stub;
+        obj.I_closed(i) =  2*Vl*Yl + 2*Vs*Ys;
+        obj.V_open(i) = ( (2*Vl*Yl + 2*Vs*Ys)/(Ys+Yl) );
+        
+    end
     
 end
 

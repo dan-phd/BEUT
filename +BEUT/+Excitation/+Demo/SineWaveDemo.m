@@ -17,8 +17,8 @@ desiredModulatedFreq = 1.2e8;
 
 %% The following parameters are automatically set but can be modified if needed
 % 2D domain (scaled to width of wave for appropriate plots)
-domain_x = linspace(0,(1+5*abs(direction(1)))*(2/desiredFreqWidth)*c,100);
-domain_y = linspace(0,(1+5*abs(direction(2)))*(2/desiredFreqWidth)*c,100);
+domain_x = linspace(0,(1+5*abs(direction(1)))*(2/desiredFreqWidth)*c,50);
+domain_y = linspace(0,(1+5*abs(direction(2)))*(2/desiredFreqWidth)*c,50);
 [X,Y] = meshgrid(domain_x,domain_y);
 
 % Temporal discretization
@@ -59,5 +59,5 @@ BEUT.Excitation.Demo.plotTimeDomain2D(sinewave, polarization, rho, time, domain_
 title(['Sinusoidal plane wave at x=' num2str(domain_x(x_idx))]); view(2)
 
 
-%% Animate
-BEUT.Excitation.Demo.animate2D(sinewave, time, X, Y, polarization)
+%% Animate in 2D
+% BEUT.Excitation.Demo.animate2D(sinewave, time, X, Y, polarization)

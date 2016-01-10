@@ -12,7 +12,6 @@ tF = tic;
 % Pad the interpolators so the sizes match (Ns and D to match Nh)
 timeBasis = BEUT.BEM.LagrangeInterpolator(dt,degree);
 timeBasis_D = timeBasis;
-timeBasis_S = diff(timeBasis);
 timeBasis_Nh = int(timeBasis);
 timeBasis_Ns = diff(timeBasis);
 [timeBasis_Ns, timeBasis_D] = padCoeffs(timeBasis_Nh, timeBasis_Ns, timeBasis_D);
@@ -24,7 +23,6 @@ for K=1:length(k)
     
     % Shifted time basis - shift and flip the time basis functions to get T(k*dt-t)
     shiftedTB_D  = timeBasis_D. translate(k(K)*dt,-1);
-    shiftedTB_S  = timeBasis_S. translate(k(K)*dt,-1);
     shiftedTB_Nh = timeBasis_Nh.translate(k(K)*dt,-1);
     shiftedTB_Ns = timeBasis_Ns.translate(k(K)*dt,-1);
     
@@ -32,8 +30,8 @@ for K=1:length(k)
     [Fh(:,K), Fs(:,K), dF(:,K)] = BEUT.BEM.computeConvolutions(P/c, shiftedTB_Nh, shiftedTB_Ns, shiftedTB_D);
     dF=dF/c;
     
-    h1=subplot(2,2,1); plot(P,Fh(:,K), 'LineWidth',2); title('Fh'); hold on;
-    h2=subplot(2,2,2); plot(P,Fs(:,K), 'LineWidth',2); title('F'); hold on;
+    h1=subplot(2,2,1); plot(P/c,Fh(:,K), 'LineWidth',2); title('Fh'); hold on;
+    h2=subplot(2,2,2); plot(P/c,Fs(:,K), 'LineWidth',2); title('F'); hold on;
     h3=subplot(2,2,3); plot(P,dF(:,K), 'LineWidth',2); title('dF');  hold on;
     
 end
@@ -43,9 +41,9 @@ F_time = toc(tF)
 axis(h1,[0 P(end) -dt/2 dt])
 axis(h2,[0 P(end) -1/dt/2 1/dt])
 axis(h3,[0 P(end) -5 3])
-xlabel(h1,'P / c'); ylabel(h1,'g \ast \intT dt')
-xlabel(h2,'P / c'); ylabel(h2,'g \ast \deltaT/\deltat')
-xlabel(h3,'\rho_m - \rho`'); ylabel(h3,'\delta_P(g \ast T)');
+xlabel(h1,'R / c'); ylabel(h1,'g \ast \intT dt')
+xlabel(h2,'R / c'); ylabel(h2,'g \ast \deltaT/\deltat')
+xlabel(h3,'R / c'); ylabel(h3,'\delta_P(g \ast T)');
 
 % Insert plot legend
 for K=1:length(k)

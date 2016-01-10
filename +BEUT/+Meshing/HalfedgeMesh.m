@@ -21,9 +21,13 @@ classdef HalfedgeMesh < handle
         shortestLinkLength;
         
         % color array for cycling through material colors
-        color = [1 0 0;...  % red
-                 0 0 1;...  % blue
-                 0 1 0];    % green
+        color = [   0,      0.447,	0.741;...
+                    0.85,   0.325,  0.098;...
+                    0.929,  0.694,  0.125;...
+                    0.494,  0.184,  0.556;...
+                    0.466,  0.674,  0.188;...
+                    0.301,  0.745,  0.933;...
+                    0.635,  0.078,  0.184 ];
     end
     
     methods
@@ -103,7 +107,7 @@ classdef HalfedgeMesh < handle
                 
             end % create_halfedges
             
-            % Create cells containing boundary halfedges between different materials
+            % Create cells containing boundary halfedges between different materials and different shapes
             function find_boundary_edges(obj)
                 
                 boundary_index=zeros(obj.num_materials,1);
@@ -115,7 +119,7 @@ classdef HalfedgeMesh < handle
                     % Opposite halfedge index
                     flip_he = obj.halfedges(he_ind).flip;
                     
-                    % If we're not on  a boundary edge...
+                    % If we're on  a boundary edge...
                     if  flip_he==0
                         
                         % each cell contains the boundary halfedges of each material
@@ -299,7 +303,7 @@ classdef HalfedgeMesh < handle
                 for f=1:obj.nF
                     material_num = vertcat(obj.faces(f).fnum);
                     hb(material_num) = patch('Vertices',obj.vertices,'Faces',vertcat(obj.faces(f).vertices),...
-                        'FaceColor',obj.color(material_num,:),'EdgeColor','black');
+                        'FaceColor',obj.color(mod(material_num-1,size(obj.color,1))+1,:),'EdgeColor','black');
                 end
                 hold off
                 
@@ -311,7 +315,7 @@ classdef HalfedgeMesh < handle
                 
             else
                 patch('Vertices',obj.vertices,'Faces',vertcat(obj.faces.vertices),...
-                'FaceColor',obj.color(:,1),'EdgeColor','black')
+                'FaceColor',obj.color(1,:),'EdgeColor','black')
             end
             
             % Alternatively:
@@ -366,7 +370,8 @@ classdef HalfedgeMesh < handle
         function plot_halfedge(obj, halfedges, col)
             
             figure;
-            triplot(obj.TR); axis equal;
+            triplot(obj.TR);
+            axis equal;
             hold on
             
             if nargin<2, halfedges=1:obj.nH; end

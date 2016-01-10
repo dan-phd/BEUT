@@ -10,15 +10,16 @@ boundary=BEUT.Meshing.MeshBoundary(mesh);
 N_V = boundary.N_V;
 
 %% Create excitation
-% Lets make 2 different kinds of waves, we can choose which one to use
-% later on
+% Lets make 2 different kinds of waves, we can choose which one to use later on
 pulseWidth = 5*dt;
 startTime = pulseWidth;
 polarization = [0 1];
 direction = [1 0];
+% Gaussian pulse:
 gpw = BEUT.Excitation.GaussianWave(pulseWidth, startTime, c, direction);
 desiredFreqWidth = 1e8;
 desiredModulatedFreq = 2e8;
+% Sinusoidal wave:
 sine = BEUT.Excitation.SineWave(desiredFreqWidth, desiredModulatedFreq,...
     c, direction, 1);
 
@@ -30,12 +31,12 @@ dual_hat_function = BEUT.BEM.BasisFunction.createDualHat(boundary.dual,false);
 
 %% Make RHS object
 rhsCalc = BEUT.BEM.RHS(N_T, dt);
-rhsCalc.excitation = @sine.eval;    % this is where we specify which wave to use
+rhsCalc.excitation = @sine.eval;    % this is where we specify which shape wave to use
 rhsCalc.Gaussian_points = 3;        % how many Gaussian quadrature points to use
 rhsCalc.polarization = polarization;
-rhsCalc.display_plot = true;
+rhsCalc.display_plot = true;        % plot wave at various points on the mesh after computation
 tangent = true;                     % this boolen (used in the compute argument)
-                                    % enables/disables taking the geometry 
+                                    % enables or disables taking the geometry 
                                     % tangent into account (usually used
                                     % for fields transverse to the plane)
 

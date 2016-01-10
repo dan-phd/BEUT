@@ -136,6 +136,27 @@ filename = 'ellipse_res';
 %}
 
 
+%% airfoil mesh (NACA0025 airfoil)
+%{
+hlead=0.005; htrail=0.05;
+t = 0.25; c = 1;
+a=5*t*c*[0.2969/sqrt(c),-0.1260/c,-0.3516/c^2,0.2843/c^3,-0.1015/c^4];
+
+distance_function=@(p) ...
+    (abs(p(:,2))-polyval([a(5:-1:2),0],p(:,1))).^2-a(1)^2*p(:,1);
+
+fixx=1-htrail*cumsum(1.3.^(0:4)');
+fixy=a(1)*sqrt(fixx)+polyval([a(5:-1:2),0],fixx);
+fixed_node_positions=[fixx,fixy; fixx,-fixy];
+xmin = -10; xmax = 10;
+ymin = -10; ymax = 10;
+BoundingBox = [xmin,ymin;xmax,ymax];
+initialEdgeLength=min(hlead,htrail);
+
+filename = 'airfoil';
+%}
+
+
 %% Create mesh
 scaled_edge_function = @BEUT.Meshing.distmesh.huniform;       % advancing wavefront mesh
 [v,f] = BEUT.Meshing.distmesh.distmesh2d(distance_function,...

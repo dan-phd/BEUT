@@ -1,11 +1,20 @@
 function [mesh, M_TM, J_TM] = MOT( mesh, boundary, operator_file, observation_points, time,...
-    material_param, Ez_i, Hxy_i, V_source, source_he  )
+    material_param, Ez_i, Hxy_i, V_source, source_he, submatrix_end_halfedge )
 %BEUT MOT
 
 
 % Parameters
 N_V = boundary.N_V;
 N_T = length(time);
+
+% If we are to extract a submatrix, we need to know where it starts and ends
+if nargin < 11
+    b = 1;
+    e = N_V;
+else
+    b = 1;
+    e = submatrix_end_halfedge;
+end
 
 % Check if there should be a point source excitation
 if nargin < 9 || all(V_source==0)
@@ -31,10 +40,10 @@ end
 % Get operators from file output by C++ program
 assert(N_T<=operator_file.N_T,...
     'Chosen N_T must be less than or equal to the number of timesteps computed in the operators');
-N = operator_file.N(:,:,1:N_T)/material_param;
-S = operator_file.S(:,:,1:N_T)*material_param;
-D = operator_file.D(:,:,1:N_T);
-Dp = operator_file.Dp(:,:,1:N_T);
+N = operator_file.N(b:e,b:e,1:N_T)/material_param;
+S = operator_file.S(b:e,b:e,1:N_T)*material_param;
+D = operator_file.D(b:e,b:e,1:N_T);
+Dp = operator_file.Dp(b:e,b:e,1:N_T);
 
 
 % Hybridisation
@@ -81,7 +90,7 @@ for j=1:N_T
     % TLM scatter and store V_open and I_closed
     mesh.scatter(j);
     V_open(:,j) = mesh.V_open;
-    I_closed(:,j) = mesh.I_open;
+    I_closed(:,j) = mesh.I_closed;
     
     
     % MOT

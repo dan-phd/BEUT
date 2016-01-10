@@ -1,4 +1,4 @@
-%% Plot a variety pf 2D Greens function in the time domain
+%% Plot a variety of 2D Greens function in the time domain
 
 c = 299792458;
 dt = 1/c;

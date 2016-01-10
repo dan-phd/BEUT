@@ -9,7 +9,7 @@ for i=1:numMaterials
     materialFaces{i} = find(fnum==i);
 end
 
-assert(all(numMaterials>wanted_materials),'Mesh must include your desired materials');
+assert(all(numMaterials>=wanted_materials),'Mesh must include your desired materials');
 
 wantedFaces = materialFaces{wanted_materials(1)};
 for i=2:numel(wanted_materials)

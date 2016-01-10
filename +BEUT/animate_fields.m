@@ -265,9 +265,10 @@ for i=1:num_fields
             check_for_fieldname('Faces',field_names,field(i).name);
             check_for_fieldname('FaceVertexCData',field_names,field(i).name);
             
-            assert(size(field(i).value.Faces,1)==size(field(i).value.FaceVertexCData,1),...
-                ['Component ''Faces'' of field ''%s'' does not have the same number of '...
-                'timesteps as component ''FaceVertexCData'''],...
+            assert( size(field(i).value.Faces,1)==size(field(i).value.FaceVertexCData,1) | ...
+                    size(field(i).value.Vertices,1)==size(field(i).value.FaceVertexCData,1),...
+                ['The data contained in ''FaceVertexCData'' of field ''%s'' does not match the'...
+                'correspondng number of ''Faces'' or number of ''Vertices'''],...
                 field(i).name)
             
             % save the Z data as value and change the dim so that correct number of
@@ -352,7 +353,7 @@ for i=1:num_fields
             Min(i)=min(min(field(i).value));
         end
         assert(~all(all(field(i).value==0)), 'Field "%s" must have values other than 0',field(i).name)
-        field(i).axis_size = [domain_x(1) domain_x(end) 1.5*Min(i) 1.5*Max(i)];
+        field(i).axis_size = [domain_x(1) domain_x(end) Min(i) Max(i)];
         
     case 2
         
@@ -549,6 +550,7 @@ play_function
             case 'surf'
                 
                 surf(domain_x,domain_y, field(i).value(:,:,k), 'LineStyle','none');
+%                 surf(domain_x,domain_y, field(i).value(:,:,k), 'EdgeColor','none', 'FaceColor','interp');
                 view (field(i).dimensions);
                 axis(field(i).axis_size);
                 if field(i).dimensions==2, colorbar; end

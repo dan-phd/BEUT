@@ -12,7 +12,7 @@ mesh_name = 'cyl_res20'; extension = 'ele';
 
 
 %% Extract inner circle and set its triangles to a different face number
-% fnum = BEUT.Meshing.Main.setInnerCircleAsDifferentMaterial(v,f,0.35);
+fnum = BEUT.Meshing.Main.setInnerCircleAsDifferentMaterial(v,f,0.5);
 
 
 %% Convert to halfedge mesh

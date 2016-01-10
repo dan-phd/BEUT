@@ -226,7 +226,7 @@ classdef BasisFunction < BEUT.BEM.PiecewisePolynomial
                 'i.e. have the same number of edges']);
             
             figure; hold on;
-            axis equal;
+            axis tight;
             % color array for cycling through basis functions
             color = [   1 0 0;...      red
                         0 0 1;...      blue

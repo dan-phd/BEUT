@@ -20,11 +20,11 @@ for n=1:round(num_nodes/num_overlays):num_nodes
     V(n,:) = V(n,:).*window;
     
     % FFT
-    [V_FFT,f,~,~,pks,locs]=BEUT.customFFT(time,V(n,:),'threshold',2,'limit',20);
+    [V_FFT,f,~,~,pks,locs]=BEUT.customFFT(time,V(n,:),'threshold',50,'limit',20);
 %     plot(f,abs(V_FFT))
     
     % Display just the dominant frequencies
-    stem(f(locs),pks,'x')
+    stem(f(locs),pks,'bx')
     
     % Find the maximum height of stem plot
     if max(pks)>max_height, max_height=max(pks); end

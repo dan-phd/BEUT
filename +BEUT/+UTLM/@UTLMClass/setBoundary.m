@@ -1,14 +1,16 @@
 function setBoundary(obj, condition)
-% Set boundary condition, condition can be 1(=open), -1(=short), 0(=absorbing), or any other number
+% Set boundary condition, condition can be 1(=open), -1(=short), 0(=absorbing),
+% or any other number (to equal the desired reflection coefficient)
 
 
-% number of halfedges on boundary
+% Number of halfedges on boundary
 num_boundary_hes = numel(obj.mesh_boundary);
 
 if (numel(condition)==1)
     condition = ones(num_boundary_hes,1) * condition;
 else
-    assert(numel(condition)==num_boundary_hes,'Each boundary halfedge must have a boundary condition')
+    assert(numel(condition)==num_boundary_hes,...
+        'Each boundary halfedge must have a boundary condition')
 end
 
 num_hes = numel(obj.halfedges);
@@ -28,12 +30,12 @@ for i=1:num_boundary_hes
             obj.reflection_coeff(boundary_ind(i)) = 1;
             obj.Y_boundary(boundary_ind(i)) = 0;
             
-            % short
+        % short
         case -1
             obj.reflection_coeff(boundary_ind(i)) = -1;
             obj.Y_boundary(boundary_ind(i)) = 0;
             
-            % absorbing
+        % absorbing
         case 0
             obj.reflection_coeff(boundary_ind(i)) = 0;
             
@@ -50,4 +52,4 @@ for i=1:num_boundary_hes
     end
 end
 
-end % setBoundary
+end
