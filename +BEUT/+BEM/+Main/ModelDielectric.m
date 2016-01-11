@@ -149,14 +149,13 @@ dual = false;
 c_file = [BEUT.CFolder filesep 'input' filesep filename '_scattered.mat'];
 in = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords, M_TM, J_TM,dual,c_file);
 
-%% Once C++ has computed the scattered field operators, run this section to animate
+%% Run this AFTER scattered fields have been computed in C++ to animate the BEM scattered fields
 %{
 operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scattered.mat']);
 E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in );
-
-% animate
 material_vertices = vertcat(boundary.halfedges.a);
 BEUT.animate_fields(2,'domain',X,Y,...
-    'animation',E_s,...
-    'overlay',material_vertices,'dimensions',2);
+    'animation',5*E_s/max(max(max(E_s))),...
+    'overlay',material_vertices,'dimensions',2,...
+    'max_amplitude',1,'min_amplitude',-1);
 %}

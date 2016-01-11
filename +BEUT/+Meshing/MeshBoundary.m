@@ -152,6 +152,8 @@ classdef MeshBoundary < handle
             end
             hold off
             
+            xlabel('x (m)');
+            ylabel('y (m)');
             
         end % plot
         

@@ -6,7 +6,7 @@ clear all;
 
 % NOTE: this is the only test in +BEUT/+Main that allows you to choose whether to use Matlab to compute the
 % BEM operators, the others will require using the C++ program because Matlab will be too slow!
-use_Matlab_to_compute_operators = true;
+use_Matlab_to_compute_operators = false;
 
 global mu0 eps0;
 
@@ -30,7 +30,7 @@ mesh.setMaterial(eps_r(2),mu_r(2));
 mesh.calcAdmittances;
 
 % Temporal parameters
-N_T = 1500;
+N_T = 1000;
 time = 0:dt:(N_T-1)*dt;
 
 
@@ -43,6 +43,7 @@ inc_wave = BEUT.Excitation.GaussianWave(width,delay,c(1));
 inc_wave.direction = [1 0];
 V_source = inc_wave.eval(time);
 figure; plot(time,V_source)
+title('Incident wave in the time domain'); xlabel('time');
 
 % check stability
 min_wavelength = c(1)/inc_wave.freq_response(time,true);
@@ -129,4 +130,5 @@ end
 entries(i+1) = {sprintf('E_z^i at halfedge %i',observation_edges(boundary_points(1)))};
 entries(i+2) = {sprintf('E_z^i at halfedge %i',observation_edges(boundary_points(2)))};
 legend('String',entries);
+xlabel('time (s)'); ylabel('E_z')
 

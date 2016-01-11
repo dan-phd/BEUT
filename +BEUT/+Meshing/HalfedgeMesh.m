@@ -266,6 +266,7 @@ classdef HalfedgeMesh < handle
             
         end
         
+        
         % Find average mesh quality factor, Q
         function Q = Q_factor(obj)
             
@@ -293,6 +294,7 @@ classdef HalfedgeMesh < handle
             
             Q = mean(QF);
         end
+        
         
         function plot_mesh(obj)
             
@@ -324,6 +326,9 @@ classdef HalfedgeMesh < handle
             
             % triplot(obj.TR);
             
+            xlabel('x (m)');
+            ylabel('y (m)');
+            
             
         end % plot_mesh
         
@@ -341,11 +346,14 @@ classdef HalfedgeMesh < handle
                 % label face
                 CC = obj.halfedges(he_ind).circumcenter;
                 h = text(CC(1),CC(2), [num2str(faces(f))]);
-                set(h,'BackgroundColor',[1 1 .6],'VerticalAlignment','bottom')
+                set(h,'BackgroundColor',[1 1 1],'VerticalAlignment','bottom')
             end
             hold off
             
-        end % plot_node_location
+            xlabel('x (m)');
+            ylabel('y (m)');
+            
+        end % plot_face
         
         
         function plot_vertex(obj, vertices)
@@ -360,11 +368,14 @@ classdef HalfedgeMesh < handle
                 % label vertex
                 h = text(obj.vertices(vertices(v),1),obj.vertices(vertices(v),2),...
                     [num2str(vertices(v))]);
-                set(h,'BackgroundColor',[1 1 .6],'VerticalAlignment','bottom')
+                set(h,'BackgroundColor',[1 1 1],'VerticalAlignment','bottom')
             end
             hold off
             
-        end % plot_vertex_location
+            xlabel('x (m)');
+            ylabel('y (m)');
+            
+        end % plot_vertex
         
         
         function plot_halfedge(obj, halfedges, col)
@@ -395,8 +406,10 @@ classdef HalfedgeMesh < handle
             end
             hold off
             
+            xlabel('x (m)');
+            ylabel('y (m)');
             
-        end % plot_vertex_location
+        end % plot_halfedge
         
         
         function plot_boundary(obj)

@@ -7,8 +7,8 @@ plane_wave = false;
 
 
 %% Load the geometry (along with dt, mu0 and eps0)
-filename = 'cyl_res69.mat';
-load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename]);
+filename = 'cyl_res69';
+load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename '.mat']);
 boundary=BEUT.Meshing.MeshBoundary(mesh);
 radius=max(range(vertcat(boundary.halfedges.a)))/2;
 
@@ -44,6 +44,7 @@ direction = [1 0];
 inc_wave = BEUT.Excitation.SineWave(f_width, f_mod, c0, direction, 0.8);
 V_source = inc_wave.eval(time);
 figure; plot(time,V_source)
+title('Incident wave in the time domain'); xlabel('time');
 
 % check stability
 min_wavelength = c0/inc_wave.freq_response(time,false);
@@ -53,31 +54,13 @@ if min_edge_length>min_wavelength/10
         num2str(min_wavelength) ')'])
 end
 
-% Plane wave from external BEM region
-if plane_wave
-    square_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,true);
-    dual_hat_function = BEUT.BEM.BasisFunction.createDualHat(boundary.dual,true);
-    
-    rhsCalc = BEUT.BEM.RHS(N_T, dt);
-    rhsCalc.excitation = @inc_wave.eval;
-    rhsCalc.Gaussian_points = 3;
-    rhsCalc.polarization = [0 -1];
-    rhsCalc.display_plot = true;
-    
-    rhsCalc.geometry = boundary.halfedges;
-    rhsCalc.test_function = square_function;
-
-    Ez_i  = rhsCalc.compute(false);
-    Hxy_i = rhsCalc.compute(true) / eta0;
-end
-
 
 %% Probe positions (exposed and shadow side)
 observation_edges = [117 1048];
 
 
 %% BEUT MOT
-operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename]);
+operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '.mat']);
 [mesh, M_TM, J_TM] = BEUT.Main.MOT(mesh, boundary, operator_file, observation_edges,...
     time, mu0, 0, 0, V_source, observation_edges(1));
 
@@ -85,16 +68,39 @@ operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename]);
 %% Time domain plots
 tstop = size(mesh.fields.E_z,2);
 figure; plot(time(1:tstop),mesh.fields.E_z(observation_edges,1:tstop))
-if plane_wave
-    hold all;
-    plot(time(1:tstop),Ez_i(find(mesh.mesh_boundary==observation_edges(1)),1:tstop),':')
-end
 entries = cell(1,numel(observation_edges));
 for i=1:numel(observation_edges)
     entries(i) = {sprintf('E_z at halfedge %i',observation_edges(i))};
 end
-if plane_wave
-    entries(i+1) = {sprintf('E_z^i at halfedge %i',observation_edges(BEM_points(1)))};
-end
 legend('String',entries);
+
+
+%% Animate field inside the UTLM region
+mesh.animate('E')
+
+
+%% Output file to compute scattered field in C++
+% then run the C++ code using flags: -fcyl_res69_scattered -t3000 -S
+[X,Y] = meshgrid([-1.5:0.1:2],[-1.5:0.1:1.5]);
+x_coords = X(:); y_coords = Y(:);
+M = mesh.fields.E_z(mesh.mesh_boundary,:);
+J = -mesh.fields.H_xy(mesh.mesh_boundary,:);
+dual = true;
+c_file = [BEUT.CFolder filesep 'input' filesep filename '_scattered.mat'];
+in_scattered = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords,M,J,dual,c_file);
+
+
+%% Run this AFTER scattered fields have been computed in C++ to plot all fields at a timestep
+BEUT.Main.plotFields( filename,mesh,X,Y,in_scattered,1100 )
+
+
+%% Run this AFTER scattered fields have been computed in C++ to animate the BEM scattered fields
+operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scattered.mat']);
+E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in_scattered );
+material_vertices = vertcat(boundary.halfedges.a);
+BEUT.animate_fields(2,'domain',X,Y,...
+    'animation',5*E_s/max(max(max(E_s))),...
+    'overlay',material_vertices,'dimensions',2,...
+    'skipTimesteps',10,...
+    'max_amplitude',1,'min_amplitude',-1);
 

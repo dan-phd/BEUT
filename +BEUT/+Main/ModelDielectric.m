@@ -9,7 +9,7 @@ global mu0 eps0;
 %% Load the geometry (along with dt, mu0 and eps0)
 % choose 'squ_cyl_res40.mat' for a coarse mesh
 % or 'squ_cyl_res80.mat' for a finer mesh
-filename = 'squ_cyl_res40.mat';
+filename = 'squ_cyl_res80.mat';
 
 load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep filename]);
 boundary=BEUT.Meshing.MeshBoundary(mesh);
@@ -27,20 +27,20 @@ mesh.setMaterial(eps_r,mu_r);
 mesh.calcAdmittances;
 
 % Temporal parameters
-N_T = 8000;
+N_T = 6000;
 time = 0:dt:(N_T-1)*dt;
 
 
 %% Set up excitation
 % Gaussian pulse properties
 min_edge_length = min(vertcat(boundary.halfedges.l));
-width = min_edge_length/c(1)*30;
-delay = 1.5;
+width = min_edge_length/c(1)*25;
+delay = 1.4;
 inc_wave = BEUT.Excitation.GaussianWave(width,delay,c(1));
 inc_wave.direction = [1 0];
 V_source = inc_wave.eval(time);
 figure; plot(time,V_source);
-title('Incident wave in the time domain');
+title('Incident wave in the time domain'); xlabel('time');
 
 % check stability
 min_wavelength = c(1)/inc_wave.freq_response(time,false);
@@ -97,10 +97,7 @@ Ez_BEUT = mesh.fields.E_z;
 source_edges=mesh.mesh_boundary(left_side);
 mesh = BEUT.UTLM.Main.run(mesh, N_T, V_source, source_edges, 750, 0);
 tstop=size(mesh.fields.E_z,2);
-window=ones(1,tstop);
-w = 0.5*(1-cos(2*pi*(1:tstop)/(tstop/2)));
-window(ceil(3*tstop/4):tstop)=w(ceil(3*tstop/4):tstop);
-Ez_UTLM = bsxfun(@times,mesh.fields.E_z,window);
+Ez_UTLM = mesh.fields.E_z;
 
 
 %% Time domain plots
@@ -135,11 +132,13 @@ analytic.eps_r=eps_r(2); analytic.mu_r=mu_r(2);
 
 exposed_side = find(cylinder_halfedges==observation_edges(1));
 shadow_side = find(cylinder_halfedges==observation_edges(2));
+points_to_plot(1).name='Exposed side'; points_to_plot(1).point=exposed_side;
+points_to_plot(2).name='Shadow side'; points_to_plot(2).point=shadow_side;
 analytic_M_FFT_reordered([exposed_side shadow_side],:) = ...
     analytic_M_FFT([floor(N_V_cylinder/2+1) 1],:);
 BEUT.BEM.Main.plotCurrentDensityInFrequency...
-    (c(1), M_FFT_BEUT, omega, A, limit, exposed_side,shadow_side, analytic_M_FFT_reordered)
+    (c(1), M_FFT_BEUT, omega, A, limit, points_to_plot, analytic_M_FFT_reordered)
 BEUT.BEM.Main.plotCurrentDensityInFrequency...
-    (c(1), M_FFT_UTLM, omega, A, limit, exposed_side,shadow_side, analytic_M_FFT_reordered)
-title('Current density at exposed and shadow side of shape (using UTLM)');
+    (c(1), M_FFT_UTLM, omega, A, limit, points_to_plot, analytic_M_FFT_reordered)
+title('Frequency domain current density (using UTLM)');
 

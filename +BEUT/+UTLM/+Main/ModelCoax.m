@@ -47,6 +47,7 @@ min_wavelength = c0/inc_wave.freq_response(time,true);
 
 V_source = inc_wave.eval(time);
 figure; plot(time,V_source)
+title('Incident wave in the time domain'); xlabel('time');
 if min_edge_length>min_wavelength/10
     warning(['Minimum edge length (' num2str(min_edge_length) ...
         ') should be less than a tenth of the minimum wavelength ('...

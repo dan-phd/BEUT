@@ -45,6 +45,7 @@ classdef Excitation
             end
             if plot_fig
                 figure; plot(f_axis,abs(FFT));
+                title('Incident wave in the frequency domain');
                 xlabel('frequency');
             end
             

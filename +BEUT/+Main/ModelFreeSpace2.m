@@ -26,7 +26,7 @@ mesh.calcAdmittances;
 mesh.setBoundary(0);
 
 % Temporal parameters
-N_T = 1500;
+N_T = 1000;
 time = 0:dt:(N_T-1)*dt;
 
 
@@ -34,11 +34,12 @@ time = 0:dt:(N_T-1)*dt;
 % Gaussian pulse properties
 edge_lengths = vertcat(boundary.halfedges.l);
 width = min(edge_lengths)/c(1)*30;
-delay = 1.5;
+delay = 1.2;
 inc_wave = BEUT.Excitation.GaussianWave(width,delay,c(1));
 inc_wave.direction = [1 0];
 V_source = inc_wave.eval(time);
-% figure; plot(time,V_source)
+figure; plot(time,V_source)
+title('Incident wave in the time domain'); xlabel('time');
 
 % check stability
 min_wavelength = c(1)/inc_wave.freq_response(time,false);
@@ -75,22 +76,20 @@ end
 %% Plot results
 tstop=size(Ez_TLM{1},2);
 figure1 = figure; axes1 = axes('Parent',figure1,...
-    'XTickLabel',{'0','4','8','12'},...
-    'XTick',[0 4e-08 8e-08 12e-08],...
-    'FontSize',10,'YTickLabel',{});
+    'FontSize',14,'YTickLabel',{});
 hold(axes1,'on');
 title('Comparison between BEUT and UTLM at different locations in free space')
-xlabel('Time ($\times10^{-8}$s)','FontSize',14,'Interpreter','latex');
-ylabel('Normalized electric field','FontSize',14,'Interpreter','latex');
-interv=20; marker = {'k' 'ok' 'sk'};
-for i=1:numel(source_edges)
+xlabel('Time (s)','FontSize',20);
+ylabel('Normalized electric field','FontSize',20);
+interval=8; marker = {'k' 'ok' 'sk'};
+for i=1:numel(observation_edges)
     % Decimate plots to use markers
-    h(i) = plot(time(1:interv:tstop),Ez_BEUT{i}(observation_edges(i),1:interv:tstop),marker{i});
-    set(h(i),'DisplayName',['BEUT - position ' num2str(i)]);
+    h(i) = plot(time(1:interval:tstop),Ez_BEUT{i}(observation_edges(i),1:interval:tstop),marker{i});
+    set(h(i),'DisplayName',['BEUT - position ' num2str(observation_edges(i))]);
 end
-for i=1:numel(source_edges)
-    h(i+numel(source_edges)) = plot(time(1:tstop),Ez_TLM{i}(observation_edges(i),1:tstop),'LineWidth',2);
-    set(h(i+numel(source_edges)),'DisplayName',['UTLM - position ' num2str(i)]);
+for i=1:numel(observation_edges)
+    h(i+numel(observation_edges)) = plot(time(1:tstop),Ez_TLM{i}(observation_edges(i),1:tstop),'LineWidth',2);
+    set(h(i+numel(observation_edges)),'DisplayName',['UTLM - position ' num2str(observation_edges(i))]);
 end
 legend(axes1,h);
 

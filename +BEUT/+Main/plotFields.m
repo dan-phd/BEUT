@@ -5,18 +5,10 @@ function plotFields( filename,mesh,X,Y,in_scattered,plot_timestep )
 operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scattered.mat']);
 E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in_scattered );
 
-%% animate
-%{
-material_vertices = vertcat(boundary.halfedges.a);
-BEUT.animate_fields(2,'domain',X,Y,...
-    'animation',E_s,...
-    'overlay',material_vertices,'dimensions',2,...
-    'skipTimesteps',10);
-%}
 
 %% plot fields outside scatterer
 max_E = max(max(max(abs(E_s))));
-E_s_ = 2*E_s(:,:,plot_timestep)/max_E;
+E_s_ = 5*E_s(:,:,plot_timestep)/max_E;
 % E_s_ = 20*log10(abs(E_s)+eps);       % in dB
 
 Parent2 = figure;
@@ -29,7 +21,7 @@ hold(axes2,'on');
 background = surf2patch(X,Y,zeros(size(E_s_)),E_s_);
 background.FaceColor = 'flat';
 bg = patch(background,'Parent',axes2,'EdgeAlpha',0.1);
-% shading faceted;
+shading faceted;
 colorbar('peer',axes2);
 
 xlabel('x (m)','FontSize',18);
@@ -60,7 +52,7 @@ S.Vertices = mesh.vertices;
 S.Faces = vertcat(mesh.faces.vertices);
 S.LineStyle = '-';
 S.FaceColor = 'flat';
-S.FaceVertexCData = 2*mesh.V0(:,plot_timestep)/max_E;%/max(max(max(abs(mesh.V0(:,plot_timestep)))))
+S.FaceVertexCData = 2*mesh.V0(:,plot_timestep)/max_E;
 scatterer = patch(S,'Parent',axes2,'EdgeAlpha',0.1);
 axis(axes2,'tight');
 uistack(scatterer, 'top')

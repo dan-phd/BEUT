@@ -28,7 +28,7 @@ cheat(2) = true;
 cheat(3) = false;
 
 % Temporal parameters
-N_T = 2000;
+N_T = 150;
 c0 = 1/sqrt(mu0*eps0);
 f_max = c0;
 dt = 1/(8*f_max);
@@ -169,7 +169,7 @@ J = -unknown(N_V+1:2*N_V,:); % n x H_xy = -J
 positions = 5:10:N_V;
 boundary.plot(positions)
 for i=1:numel(positions), points_to_plot(i).point=positions(i); end
-time_to_plot=time(1:100);
+time_to_plot=time(1:N_T);
 BEUT.BEM.Main.plotCurrentDensityInTime(time_to_plot, Ez_i{3}, points_to_plot); title('Ez_i');
 BEUT.BEM.Main.plotCurrentDensityInTime(time_to_plot, M, points_to_plot); title('M');
 BEUT.BEM.Main.plotCurrentDensityInTime(time_to_plot, Hxy_i{3}, points_to_plot); title('Hxy_i');

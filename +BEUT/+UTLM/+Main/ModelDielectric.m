@@ -55,6 +55,7 @@ inc_wave = BEUT.Excitation.GaussianWave(width, delay, c0);
 inc_wave.A=0.5;
 V_source = inc_wave.eval(time);
 figure; plot(time,V_source)
+title('Incident wave in the time domain'); xlabel('time');
 min_wavelength = c0/inc_wave.freq_response(time,true);
 if min_edge_length>min_wavelength/10
     warning(['Minimum edge length (' num2str(min_edge_length) ...

@@ -1,5 +1,11 @@
-function animate(obj, field)
+function animate(obj, field, scale)
 % Animate E or H field of the mesh
+
+% Scale the colors so that the fields are more obvious, this is required because
+% UTLM usually has a much larger field at the excitation than everywhere else
+if nargin<3
+    scale = 5;
+end
 
 % Set plot properties
 S.Vertices = obj.vertices;
@@ -46,12 +52,11 @@ material_vertices = unique(...
     ),:...
     ), 'rows');
 
-max_amplitude = max(max(max(S.FaceVertexCData)));
-min_amplitude = min(min(min(S.FaceVertexCData)));
-% max_amplitude = 1;
-% min_amplitude = -max_amplitude;
 
-S.FaceVertexCData = 6*S.FaceVertexCData/max(max(max(abs(S.FaceVertexCData))));
+% Normalize
+S.FaceVertexCData = scale*S.FaceVertexCData/max(max(max(abs(S.FaceVertexCData))));
+max_amplitude = 1;
+min_amplitude = -max_amplitude;
 
 BEUT.animate_fields(2,'skipTimesteps',10,...
     [field ' field animation'],S,...

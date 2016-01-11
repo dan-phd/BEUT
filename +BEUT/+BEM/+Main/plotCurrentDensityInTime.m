@@ -5,7 +5,6 @@ function plotCurrentDensityInTime(time, J, struct_of_points)
 % an optional 'name' parameter corresponding to a legend name
 
 figure;
-xlabel('time'); ylabel('J(\rho,t)');
 
 t_limit = numel(time);
 plot( time(1:t_limit), J(vertcat(struct_of_points.point),1:t_limit) )
@@ -23,5 +22,7 @@ for i=1:numel(struct_of_points)
         legend([names.String num2str(struct_of_points(i).point)]);
     end
 end
+
+xlabel('time'); ylabel('J(\rho,t)');
 
 end
