@@ -3,8 +3,10 @@ function plot_materials(obj, material_parameter)
 
 if strcmp(material_parameter,'eps_r')
     material_param = 1;
+    material_name = '$\varepsilon_r$';
 elseif strcmp(material_parameter,'mu_r')
     material_param = 2;
+    material_name = '$\mu_r$';
 else
     error('material_parameter must be either ''eps_r'' or'' mu_r''');
 end
@@ -16,7 +18,7 @@ S.FaceColor = 'flat';
 S.LineStyle = 'None';
 figure; axis equal; hold on;
 colorbar
-title([material_parameter ' of mesh'])
+title([material_name ' of mesh'],'Interpreter','LaTex')
 
 % Plot each face with color equal to material parameter
 if material_param == 1
@@ -26,5 +28,9 @@ elseif material_param == 2
 end
 
 patch(S)
+axis tight;
+
+xlabel('x (m)');
+ylabel('y (m)');
 
 end

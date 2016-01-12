@@ -18,4 +18,7 @@ for m=1:obj.num_materials
     
 end
 
+xlabel('x (m)');
+ylabel('y (m)');
+
 end
