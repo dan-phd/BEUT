@@ -3,17 +3,14 @@ clear all;
 global mu0 eps0;
 
 
-%% Paramaters
-NT = 2000;
-mu0 = 4*pi*10^-7;           % permeability of free space
-eps0 = 8.854187817e-12;     % permittivity of free space
-c0 = 1/sqrt(eps0*mu0);
-
 %% Read mesh
 load([fileparts(which...
     ('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res20.mat']);
 radius=max(range(mesh.vertices))/2;
 mesh.plot_mesh;
+c0 = 1/sqrt(eps0*mu0);
+NT = 2000;
+time = 0:dt:(NT-1)*dt;
 
 
 %% Setup TLM
@@ -21,11 +18,6 @@ mesh.plot_mesh;
 eps_r(1) = 1; mu_r(1) = 1;      % outside sylinder is free space
 eps_r(2) = inf; mu_r(2) = 1;    % inside cylinder is PEC
 mesh.setMaterial(eps_r,mu_r);
-
-% Find dt < minLinklength*sqrt(2*eps0*mu0)
-dt = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /4;
-mesh.dt=dt;
-time = 0:dt:(NT-1)*dt;
 
 % Calculate admittances using dt
 mesh.calcAdmittances;
@@ -61,5 +53,5 @@ mesh = BEUT.UTLM.Main.run(mesh, NT, V_source, sourceEdges);
 
 
 %% Animate
-mesh.animate('E');
+mesh.animate('E',50);
 

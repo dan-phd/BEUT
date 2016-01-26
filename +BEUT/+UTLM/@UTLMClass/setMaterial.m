@@ -1,5 +1,7 @@
 function setMaterial(obj, relative_eps, relative_mu)
-% Set material of UTLM mesh
+% set the permittivity (relative_eps) and permeability (relative_mu) of the mesh. Each argument
+% can either be a value to be applied across the entire mesh, an array of size number of faces, or an
+% array of size number of materials.
 
 % Find number of materials
 num_materials_eps = numel(relative_eps);

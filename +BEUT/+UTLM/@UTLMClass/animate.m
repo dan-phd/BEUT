@@ -1,5 +1,8 @@
 function animate(obj, field, scale)
-% Animate E or H field of the mesh
+% animate either the electric field (using field = 'E') or magnetic field (using field = 'H'), where the field
+% is normalised and scale sets allows the user to empirically scale the fields so that the colorbar gives a
+% clearer result. This is sometimes required because UTLM usually has a much larger field at the excitation
+% than everywhere else.
 
 % Scale the colors so that the fields are more obvious, this is required because
 % UTLM usually has a much larger field at the excitation than everywhere else
@@ -39,7 +42,7 @@ if strcmp(field,'E')
 elseif strcmp(field,'H')
     S.FaceVertexCData = obj.I0;
 else
-    error('field must be either ''E'' or'' H''');
+    error('field must be either ''E'' or ''H''');
 end
 
 % find vertices around materials

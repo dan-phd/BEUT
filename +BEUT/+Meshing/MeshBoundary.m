@@ -1,12 +1,12 @@
 classdef MeshBoundary < handle
-    % Extract boundary edges of a halfedge mesh
-    %
-    %     For example:
-    %
-    %       [v,f]=BEUT.Meshing.loadMesh([fileparts(which('BEUT.Meshing.loadMesh'))...
-    %             filesep 'meshes' filesep 'cyl_res21.mat']);
-    %       geometry=BEUT.Meshing.MeshBoundary(BEUT.Meshing.HalfedgeMesh(v,f));
-    %       geometry.plot
+%     Extract boundary edges of a halfedge mesh
+%     
+%         For example:
+%     
+%           [v,f]=BEUT.Meshing.load([fileparts(which('BEUT.Meshing.load'))...
+%                 filesep 'meshes' filesep 'cyl_res21.mat']);
+%           geometry=BEUT.Meshing.MeshBoundary(BEUT.Meshing.HalfedgeMesh(v,f));
+%           geometry.plot
     
     properties
         

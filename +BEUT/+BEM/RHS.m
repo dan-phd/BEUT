@@ -1,15 +1,19 @@
 classdef RHS
-    % Compute RHS (V vector) for the TDBEM which includes the incoming wave
+% This class computes the right hand side i.e. the V vector for the 2D TDBEM which includes testing the
+% incident field.
     
     properties
-        N_T;
-        dt;
-        geometry;
-        test_function;
-        display_plot=false;
-        excitation;
-        polarization;
-        Gaussian_points = 3;    % quadrature points
+        N_T;            % total number of timesteps.
+        dt;             % timestep.
+        geometry;       % list of halfedges in the form of MeshBoundary.halfedges or MeshBoundary.dual.
+        test_function;  % the function used for testing, in the form of a BasisFunction.
+        display_plot=false; % a boolean which determines whether to plot the wave at various points on 
+                            % the mesh after computation
+        excitation;     % a function which evaluates the amplitude of the wave given a time and location,
+                        % i.e. the eval an instance of an Excitation subclass.
+        polarization;   % row vector specifying a polarization as a 2D unit vector; e.g. [1 0] = x-direction,
+                        % [0 -1] = negative y-direction, 1 = normal to plane (z-direction).
+        Gaussian_points = 3;    % a value to specify how many Gaussian quadrature points to use per edge.
     end
     
     methods

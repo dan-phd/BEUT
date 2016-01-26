@@ -1,4 +1,5 @@
 function scatter(obj, k)
+% run the scatter process for timestep k.
 
 % Copy object variables to local workspace (for speed benefit)
 num_edges_per_face = obj.nV_face;

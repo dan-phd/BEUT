@@ -1,9 +1,14 @@
-classdef BasisFunction < BEUT.BEM.PiecewisePolynomial
-    % Define the basis function as a piecewise polynomial on every segment of the geometry
+classdef BasisFunction
+% This class creates and stores basis functions (or testing functions) in the form of
+% PiecewisePolynomial instances which are defined on every edge of a geometry.
     
     properties
-        pol;          % polynomial basis function(s) for each edge
-        idx;          % polynomial indices to define which polynomial segments to apply
+        pol;          % a cell matrix of size number of partitions x number of edges which 
+                      % stores the basis function(s) for each edge in the form of
+                      % PiecewisePolynomial instances.
+                      
+        idx;          % a cell array of size number of edges, each cell contains an array
+                      % of indices that define which polynomials in pol apply to the edge.
         
         idx_table;    % index table to define which polynomial segments to apply to each edge 
     end
@@ -18,7 +23,9 @@ classdef BasisFunction < BEUT.BEM.PiecewisePolynomial
     
     methods(Static)
         
-        % Create hat basis, "scale" set to true scales by 1/length
+        % create hat basis functions that apply to the halfedges of a mesh. scale is a an optional boolean
+        % (set to false by default) which determines whether to scale the function amplitude by 1/length, i.e.
+        % force the function to have a unit height.
         function obj = createHat(halfedges, scale)
             
             if nargin<2, scale=false; end
@@ -210,7 +217,7 @@ classdef BasisFunction < BEUT.BEM.PiecewisePolynomial
                 
             end
             
-        end % div
+        end % divergence
         
         
         % Collapse the 2D geometry into a horizontal line and plot

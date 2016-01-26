@@ -7,13 +7,13 @@ function [ vertices, faces, fnum ] = load(filename, type)
 %  type:     optional, indicates file type.
 %
 % Supported types are:
-%  .in
+%  .in (custom)
 %  .gid
-%  .gmsh (or .msh)
-%  .mphtxt (Comsol output)
-%  .obj
-%  .node with associated .ele
-%  .mat (Matlab triangulation object)
+%  .gmsh/.msh (GMSH)
+%  .mphtxt (Comsol)
+%  .obj (Wavefront)
+%  .node with associated .ele (Triangle)
+%  .mat (BEUT)
 %  .poly
 %
 % example:

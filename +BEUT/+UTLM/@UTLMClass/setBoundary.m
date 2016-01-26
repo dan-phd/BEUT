@@ -1,6 +1,6 @@
 function setBoundary(obj, condition)
-% Set boundary condition, condition can be 1(=open), -1(=short), 0(=absorbing),
-% or any other number (to equal the desired reflection coefficient)
+% set the boundary condition for the whole domain, or for each boundary halfedge individually. Each condition
+% can be 1(=open), -1(=short), 0(=absorbing).
 
 
 % Number of halfedges on boundary

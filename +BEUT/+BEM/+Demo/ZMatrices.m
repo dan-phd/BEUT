@@ -12,7 +12,7 @@ outer_points_sp = 5*outer_points;
 inner_points_sp = 5*outer_points+1;
 
 Lagrange_degree = 1;
-cheat = false;
+cheat = true;
 
 Zmatrix = BEUT.BEM.ZMatrices(N_T,dt,boundary,c);
 

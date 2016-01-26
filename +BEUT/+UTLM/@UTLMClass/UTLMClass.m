@@ -46,7 +46,7 @@ classdef UTLMClass < BEUT.Meshing.HalfedgeMesh & handle
         
         
         
-        % Excite the source halfedge as an electric field source
+        % excite all source halfedges specified by sourceEdges with the value given by V_source.
         function excite_E(obj, sourceEdges, V_source)
             
             for edge = 1:numel(sourceEdges)

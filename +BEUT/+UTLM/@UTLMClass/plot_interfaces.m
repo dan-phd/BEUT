@@ -1,5 +1,5 @@
 function plot_interfaces(obj)
-% Plot mesh interfaces (between different materials)
+% Plot mesh interfaces between different materials.
 
 figure;
 axis equal;

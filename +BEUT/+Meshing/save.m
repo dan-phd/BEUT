@@ -1,6 +1,6 @@
 function save( mesh, dual, mat_file, c_file, dt, mu0, eps0 )
 %save(mesh) converts the UTLM mesh for input to other parts of the system
-%   mesh is a UTLMClass object, dual (boolean) 
+%   mesh is a UTLMClass object, dual is a boolean 
 %   c_file is the path and filename to output the file that C++ will use
 %   mat_file is the path and filename to output the file that Matlab will use
 %   dt, mu0 and eps0 are optional and will be calculated automatically if not given
@@ -51,7 +51,7 @@ end
 
 
 %% output for C++ if required
-if(nargin>2)
+if(nargin>3)
     if(~isempty(c_file))
         save(c_file, 'boundary', 'dt', 'c', 'num_shapes', 'dual', '-v7');
         disp(['C++ file output to: ' c_file])

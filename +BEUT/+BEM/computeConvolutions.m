@@ -1,6 +1,7 @@
 function [ Fh, Fs, dF ] = computeConvolutions( distances, intTB, TB, dTB )
-% Compute temporal convolutions for a temporal basis function and its integrated & derivative form
-% P is made up of a number of distances (from source to observation)
+% Process the temporal convolution between the Lagrange interpolator temporal-basis function, TB (and its
+% integrated, intTB, and derivative, dTB, forms) and the 2D time-domain Green function.
+% distances is a matrix of distances (from source to observation)
 % intTB, TB, dTB are the temporal basis functions for Fh, Fs, dF respectively
 % Fh, Fs, dF are matrices of the same size as distances
 

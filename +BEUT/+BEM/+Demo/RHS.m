@@ -24,7 +24,7 @@ sine = BEUT.Excitation.SineWave(desiredFreqWidth, desiredModulatedFreq,...
     c, direction, 1);
 
 %% Create basis functions
-square_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,false);
+square_function = BEUT.BEM.\verb|MeshBoundary.halfedges|.createSquare(boundary.halfedges,false);
 hat_function = BEUT.BEM.BasisFunction.createHat(boundary.halfedges,false);
 dual_square_function = BEUT.BEM.BasisFunction.createDualSquare(boundary.dual,true);
 dual_hat_function = BEUT.BEM.BasisFunction.createDualHat(boundary.dual,false);
@@ -35,10 +35,8 @@ rhsCalc.excitation = @sine.eval;    % this is where we specify which shape wave 
 rhsCalc.Gaussian_points = 3;        % how many Gaussian quadrature points to use
 rhsCalc.polarization = polarization;
 rhsCalc.display_plot = true;        % plot wave at various points on the mesh after computation
-tangent = true;                     % this boolen (used in the compute argument)
-                                    % enables or disables taking the geometry 
-                                    % tangent into account (usually used
-                                    % for fields transverse to the plane)
+tangent = true;                     % this is a boolean which enables or disables taking the edge tangents 
+                                    % into account; used for fields transverse to the plane
 
 %% Compute RHS using square testing functions
 rhsCalc.geometry = boundary.halfedges;

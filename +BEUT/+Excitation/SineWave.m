@@ -1,5 +1,5 @@
 classdef SineWave < BEUT.Excitation.Excitation
-% 2D Sinusoidal wave
+% Sinusoidal wave
     
     properties
         f;
@@ -10,10 +10,10 @@ classdef SineWave < BEUT.Excitation.Excitation
     methods
         
         % Constructor
-        function obj = SineWave(freq_width, modulated_frequency, c, direction, timeOfArrivalRratio)
+        function obj = SineWave(freq_width, modulated_frequency, c, direction, timeOfArrivalRatio)
             
             if nargin<5
-                timeOfArrivalRratio=1.5;
+                timeOfArrivalRatio=1.5;
                 if nargin<4
                     direction = [1 0];
                     if nargin<3
@@ -28,7 +28,7 @@ classdef SineWave < BEUT.Excitation.Excitation
             
             obj.f = modulated_frequency;
             obj.T = 4/freq_width;
-            obj.t0 = timeOfArrivalRratio;
+            obj.t0 = timeOfArrivalRatio;
             
             % Create Gaussian signal
             obj.G = BEUT.Excitation.GaussianWave(obj.T, obj.t0, obj.c, obj.direction);

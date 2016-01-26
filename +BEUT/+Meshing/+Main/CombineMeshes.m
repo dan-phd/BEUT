@@ -1,4 +1,4 @@
-% Create a single mesh which combines 2 different meshes
+% Create a single mesh which combines 2 meshes
 
 path = [fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep];
 

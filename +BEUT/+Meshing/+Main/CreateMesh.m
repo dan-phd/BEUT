@@ -1,4 +1,4 @@
-% Create 2D meshes mesh using distmesh2d function and save it ready for simulations
+% Create 2D meshes using distmesh2d function and save it ready for simulations
 % see: http://persson.berkeley.edu/distmesh/
 % Note this is for simple geometries only, don't expect to mesh anything too complex!
 % Use a dedicated mesher and import the file for more complex geometries.

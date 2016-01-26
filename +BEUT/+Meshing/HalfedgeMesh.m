@@ -298,7 +298,7 @@ classdef HalfedgeMesh < handle
         
         function plot_mesh(obj)
             
-            figure, axis equal; camlight
+            figure, axis equal;
             
             if obj.num_materials>1
                 hold on

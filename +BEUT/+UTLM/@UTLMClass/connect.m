@@ -1,4 +1,7 @@
 function connect(obj, k, E)
+% run the connect process for timestep k. If the electric field E is given, then we use this as the incident
+% voltage at the boundary halfedges, as is stipulated by the BEUT method. If E is not given, compute the
+% connect process as normal.
 
 num_hes = numel(obj.halfedges);
 V_i = zeros(num_hes,1);

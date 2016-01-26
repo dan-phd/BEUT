@@ -1,5 +1,7 @@
 function checkMesh(obj)
-% Plot Voronoi diagram and check mesh has sufficiently large TLM link lengths
+% plot Voronoi diagram and highlight the location of the shortest link length. The text output to screen tells
+% the user the short- est link length, the average link length, and the ratio (which from experience is good
+% below 10, and best below 5).
 
 % Plot triangulation
 figure, triplot(obj.TR,'k'); axis equal; hold on;

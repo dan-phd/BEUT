@@ -3,7 +3,6 @@
 % Excite with a plane wave or point source and watch animation!
 clear all;
 global mu0 eps0;
-plane_wave = false;
 
 
 %% Load the geometry (along with dt, mu0 and eps0)
@@ -38,8 +37,6 @@ time = 0:dt:(N_T-1)*dt;
 min_edge_length = min(vertcat(boundary.halfedges.l));
 f_width = 0.3 * c0;
 f_mod = 0.9 * c0;
-pulse_width = 4/f_width;    % this is the corresponding width of the time domain pulse
-t_end = 2*pulse_width;      % this is the time the pulse will sufficiently subside
 direction = [1 0];
 inc_wave = BEUT.Excitation.SineWave(f_width, f_mod, c0, direction, 0.8);
 V_source = inc_wave.eval(time);
@@ -87,16 +84,16 @@ M = mesh.fields.E_z(mesh.mesh_boundary,:);
 J = -mesh.fields.H_xy(mesh.mesh_boundary,:);
 dual = true;
 c_file = [BEUT.CFolder filesep 'input' filesep filename '_scattered.mat'];
-in_scattered = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords,M,J,dual,c_file);
+in_scatterer = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords,M,J,dual,c_file);
 
 
 %% Run this AFTER scattered fields have been computed in C++ to plot all fields at a timestep
-BEUT.Main.plotFields( filename,mesh,X,Y,in_scattered,1100 )
+BEUT.Main.plotFields( filename,mesh,X,Y,in_scatterer,1100 )
 
 
 %% Run this AFTER scattered fields have been computed in C++ to animate the BEM scattered fields
 operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scattered.mat']);
-E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in_scattered );
+E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in_scatterer );
 material_vertices = vertcat(boundary.halfedges.a);
 BEUT.animate_fields(2,'domain',X,Y,...
     'animation',5*E_s/max(max(max(E_s))),...

@@ -1,5 +1,5 @@
 classdef ZMatrices
-    % Compute Z matrix for the TDBEM
+% Compute the S,D,Dp,Nh, and Ns matrices for the 2D TDBEM
     
     properties
         N_T;

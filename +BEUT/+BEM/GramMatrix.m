@@ -1,9 +1,12 @@
 classdef GramMatrix
-    % Gram matrix class
+% compute the Gram matrix and output a matrix of size(number of edges)^2.
     
     properties
-        basis_function, test_function, geometry;
-        test_points = 3;
+        basis_function;     % the function used for sampling, in the form of a BasisFunction
+        test_function;      % the function used for testing, in the form of a BasisFunction
+        geometry;           % a list of halfedges in the form of MeshBoundary.halfedges or 
+                            % MeshBoundary.dual
+        test_points = 3;    % how many Gaussian quadrature points to use per edge
     end
     
     methods

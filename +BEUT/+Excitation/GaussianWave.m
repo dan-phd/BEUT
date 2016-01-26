@@ -1,5 +1,5 @@
 classdef GaussianWave < BEUT.Excitation.Excitation
-% 2D Gaussian pulse wave
+% Gaussian pulse wave
     
     properties
     end
@@ -7,14 +7,14 @@ classdef GaussianWave < BEUT.Excitation.Excitation
     methods
         
         % Constructor
-        function obj = GaussianWave(width, timeOfArrivalRratio, c, direction)
+        function obj = GaussianWave(width, timeOfArrivalRatio, c, direction)
             
             if nargin<4
                 direction = [1 0];
                 if nargin<3
                     c = 1;
                     if nargin<2
-                        timeOfArrivalRratio=1.5;
+                        timeOfArrivalRatio=1.5;
                     end
                 end
             end
@@ -22,7 +22,7 @@ classdef GaussianWave < BEUT.Excitation.Excitation
             obj.direction = direction;
             obj.c = c;
             obj.A = 1;
-            obj.t0 = timeOfArrivalRratio * width;
+            obj.t0 = timeOfArrivalRatio * width;
             obj.T = width;
         end
         

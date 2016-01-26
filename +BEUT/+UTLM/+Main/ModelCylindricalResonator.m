@@ -7,28 +7,19 @@ clear all;
 global mu0 eps0;
 
 
-%% Paramaters
-NT = 10000;
-mu0 = 4*pi*10^-7;           % permeability of free space
-eps0 = 8.854187817e-12;     % permittivity of free space
-c0 = 1/sqrt(eps0*mu0);
-
-
 %% Read mesh
 load([fileparts(which...
     ('BEUT.Meshing.load')) filesep 'meshes' filesep 'cyl_res21.mat']);
 radius=max(range(mesh.vertices))/2;
+c0 = 1/sqrt(eps0*mu0);
+NT = 10000;
+time = 0:dt:(NT-1)*dt;
 
 
 %% Setup TLM
 % Set the material parameters
 eps_r = 1; mu_r = 1;
 mesh.setMaterial(eps_r,mu_r);
-
-% Find dt < minLinklength*sqrt(2*eps0*mu0)
-dt = mesh.shortestLinkLength*sqrt(2*eps0*mu0) /4;
-mesh.dt=dt;
-time = 0:dt:(NT-1)*dt;
 
 % Calculate admittances using dt
 mesh.calcAdmittances;
