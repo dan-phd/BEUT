@@ -11,23 +11,23 @@ To install, place the entire contents of *+BEUT* inside a Matlab search path.
 ## Contents
 The *BEUT* project repository has the following directory structure:
 * *BEUT* - license and readme files
- * *+BEUT* - project folder
-  * *+BEM* - container for the BEM solver
-   * *+Analytical* - analytical solutions for comparison
-   * *+Demo* - examples demonstrating BEM components
-   * *+Main* - main code for BEM test cases
-  * *+Excitation* - container for the excitation classes
-   * *+Demo* - examples demonstrating the excitation classes
-   * *+Main* - main code for the BEUT test cases
-  * *+Meshing* - container for the meshing classes
-   * *+distmesh* - a third party mesher
-   * *+Main* - main code for creating or loading meshes
-   * *meshes* - contains .mat meshes ready to be used
-    * *unconverted* - contins meshes to be converted
-  * *+UTLM* - container for the UTLM solver
-   * *@UTLMClass* - the UTLM class definition and its methods
-   * *+Analytical* - analytical solutions for comparison
-   * *+Main* - main code for UTLM test cases
+    * *+BEUT* - project folder
+        * *+BEM* - container for the BEM solver
+            * *+Analytical* - analytical solutions for comparison
+            * *+Demo* - examples demonstrating BEM components
+            * *+Main* - main code for BEM test cases
+        * *+Excitation* - container for the excitation classes
+            * *+Demo* - examples demonstrating the excitation classes
+        * *+Main* - main code for the BEUT test cases
+        * *+Meshing* - container for the meshing classes
+            * *+distmesh* - a third party mesher
+            * *+Main* - main code for creating or loading meshes
+            * *meshes* - contains .mat meshes ready to be used
+                * *unconverted* - contins meshes to be converted
+        * *+UTLM* - container for the UTLM solver
+            * *@UTLMClass* - the UTLM class definition and its methods
+            * *+Analytical* - analytical solutions for comparison
+            * *+Main* - main code for UTLM test cases
 
 The *+BEUT/+Main* folder contains examples on how to use BEUT. There are *+Main* folders elsewhere in the project to demonstrate the use of UTLM and BEM as individual solvers. The *+Meshing/+Main* folder is the first point of call for creating a mesh or loading a custom 2D mesh. For demonstration and testing of individual classes and functions, refer to the *+Demo* folders.
 Generally, you will only want to open and run scripts in the *+Main* and *+Demo* folders.
