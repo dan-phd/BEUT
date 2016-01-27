@@ -1,0 +1,7 @@
+## Ignore the following files:
+
+Model2Cylinders.m
+Model2LuneburgLens.m
+ModelDipole.m
+ModelRadome.m
+ModelFreeSpace3.m

@@ -19,7 +19,7 @@ function [ vertices, faces, fnum ] = load(filename, type)
 % example:
 %
 %   mesh_name = 'cyl_res21.mat';
-%   [v,f]=BEUT.Meshing.loadMesh([fileparts(which('BEUT.Meshing.loadMesh')) filesep 'meshes' filesep mesh_name]);
+%   [v,f]=BEUT.Meshing.load([fileparts(which('BEUT.Meshing.load')) filesep 'meshes' filesep mesh_name]);
 %   patch('Vertices',v,'Faces',f,'FaceColor','red','EdgeColor','black'); axis equal
 
 % Last edited 04/08/2014 - Daniel Simmons - dansphd.com
