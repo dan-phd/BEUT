@@ -19,8 +19,6 @@ for i=1:mesh.nF
     eps_r(i) = (2-(r/radius).^2);
 end
 mu_r=1;
-
-eta0 = sqrt(mu0/eps0);
 c0 = 1/sqrt(mu0*eps0);
 
 mesh.setMaterial(eps_r,mu_r);
@@ -34,7 +32,6 @@ time = 0:dt:(N_T-1)*dt;
 
 %% Set up excitation
 % Sinewave signal properties
-min_edge_length = min(vertcat(boundary.halfedges.l));
 f_width = 0.3 * c0;
 f_mod = 0.9 * c0;
 direction = [1 0];
@@ -44,7 +41,8 @@ figure; plot(time,V_source)
 title('Incident wave in the time domain'); xlabel('time');
 
 % check stability
-min_wavelength = c0/inc_wave.freq_response(time,false);
+min_edge_length = min(vertcat(boundary.halfedges.l));
+min_wavelength = c0/inc_wave.freq_response(time,true);
 if min_edge_length>min_wavelength/10
     warning(['Minimum edge length (' num2str(min_edge_length) ...
         ') should be less than a tenth of the minimum wavelength ('...
@@ -58,9 +56,10 @@ mesh.plot_halfedge(observation_edges);
 
 
 %% BEUT MOT
+source_edge = observation_edges(1);
 operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '.mat']);
 [mesh, M_TM, J_TM] = BEUT.Main.MOT(mesh, boundary, operator_file, observation_edges,...
-    time, mu0, 0, 0, V_source, observation_edges(1));
+    time, mu0, 0, 0, V_source, source_edge);
 
 
 %% Time domain plots
@@ -88,17 +87,14 @@ c_file = [BEUT.CFolder filesep 'input' filesep filename '_scattered.mat'];
 in_scatterer = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords,M,J,dual,c_file);
 
 
-%% Run this AFTER scattered fields have been computed in C++ to plot all fields at a timestep
-BEUT.Main.plotFields( filename,mesh,X,Y,in_scatterer,1000,true )
-
-
 %% Run this AFTER scattered fields have been computed in C++ to animate the BEM scattered fields
 operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scattered.mat']);
 E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in_scatterer );
-material_vertices = vertcat(boundary.halfedges.a);
 BEUT.animate_fields(2,'domain',X,Y,...
     'animation',E_s/max(max(max(E_s))),...
-    'overlay',material_vertices,'dimensions',2,...
+    'overlay',vertcat(boundary.halfedges.a),'dimensions',2,...
     'skipTimesteps',10,...
     'max_amplitude',1,'min_amplitude',-1);
 
+%% Run this AFTER scattered fields have been computed in C++ to plot all fields at a timestep
+BEUT.Main.plotFields( filename,mesh,X,Y,in_scatterer,1000,true )
