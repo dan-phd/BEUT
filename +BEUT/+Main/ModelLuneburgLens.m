@@ -54,6 +54,7 @@ end
 
 %% Probe positions (exposed and shadow side)
 observation_edges = [117 1048];
+mesh.plot_halfedge(observation_edges);
 
 
 %% BEUT MOT
@@ -78,7 +79,7 @@ mesh.animate('E')
 
 %% Output file to compute scattered field in C++
 % then run the C++ code using flags: -fcyl_res69_scattered -t3000 -S
-[X,Y] = meshgrid([-1.5:0.1:2],[-1.5:0.1:1.5]);
+[X,Y] = meshgrid([-1.5:0.2:2],[-1.5:0.2:1.5]);
 x_coords = X(:); y_coords = Y(:);
 M = mesh.fields.E_z(mesh.mesh_boundary,:);
 J = -mesh.fields.H_xy(mesh.mesh_boundary,:);
@@ -88,7 +89,7 @@ in_scatterer = BEUT.BEM.Main.saveScatteredFieldPoints(mesh,x_coords,y_coords,M,J
 
 
 %% Run this AFTER scattered fields have been computed in C++ to plot all fields at a timestep
-BEUT.Main.plotFields( filename,mesh,X,Y,in_scatterer,1100 )
+BEUT.Main.plotFields( filename,mesh,X,Y,in_scatterer,1000,true )
 
 
 %% Run this AFTER scattered fields have been computed in C++ to animate the BEM scattered fields
@@ -96,7 +97,7 @@ operator_file = matfile([BEUT.CFolder filesep 'results' filesep filename '_scatt
 E_s = BEUT.BEM.Main.organizeScatteredField(operator_file, X, in_scatterer );
 material_vertices = vertcat(boundary.halfedges.a);
 BEUT.animate_fields(2,'domain',X,Y,...
-    'animation',5*E_s/max(max(max(E_s))),...
+    'animation',E_s/max(max(max(E_s))),...
     'overlay',material_vertices,'dimensions',2,...
     'skipTimesteps',10,...
     'max_amplitude',1,'min_amplitude',-1);

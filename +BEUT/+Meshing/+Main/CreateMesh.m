@@ -13,7 +13,7 @@ ymin = -10; ymax = 10;
 BoundingBox = [xmin,ymin;xmax,ymax];
 
 % Define discretisation by number of wavelengths
-num_wavelengths_per_radius = 2;
+num_wavelengths_per_radius = 1;
 largest_wavelength = 1/radius/num_wavelengths_per_radius;
 initialEdgeLength = largest_wavelength/11;    % <wavelength/10
 N_V = round((2*pi)/acos(1-0.5*(initialEdgeLength/radius)^2));

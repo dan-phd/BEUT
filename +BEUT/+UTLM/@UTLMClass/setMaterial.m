@@ -10,30 +10,31 @@ num_materials = max(num_materials_eps,num_materials_mu);
 assert(num_materials_eps+num_materials_mu==2*num_materials ||...
     num_materials_eps+num_materials_mu==num_materials+1,...
     'number of material parameters must equal each other or equal 1');
-assert(num_materials==obj.num_materials || num_materials==obj.nF,...
+assert(num_materials==obj.num_materials || num_materials==obj.nF || num_materials==1,...
     'number of materials must be equal to the number of faces or materials specified in the mesh');
 
 % Retreive material parameters
+max_materials = max(obj.num_materials,num_materials);
 if num_materials_eps==1
     if num_materials_mu==1
-        for i=1:num_materials
+        for i=1:max_materials
             eps_r(i) = relative_eps;
             mu_r(i) = relative_mu;
         end
     else
-        for i=1:num_materials
+        for i=1:max_materials
             eps_r(i) = relative_eps;
             mu_r(i) = relative_mu(i);
         end
     end
 else
     if num_materials_mu==1
-        for i=1:num_materials
+        for i=1:max_materials
             eps_r(i) = relative_eps(i);
             mu_r(i) = relative_mu;
         end
     else
-        for i=1:num_materials
+        for i=1:max_materials
             eps_r(i) = relative_eps(i);
             mu_r(i) = relative_mu(i);
         end

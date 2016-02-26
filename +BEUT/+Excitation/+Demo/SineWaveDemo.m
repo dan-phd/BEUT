@@ -33,7 +33,7 @@ time = (0:N_T-1)*dt;
 % Create Sinewave signal
 sinewave = BEUT.Excitation.SineWave(desiredFreqWidth, desiredModulatedFreq,...
     c, direction, startTimeRatio);
-% sinewave.envelope = @cosine;    % envelope can be "Gaussian" (default) or "cosine" function
+sinewave.envelope = @cosine;    % envelope can be "Gaussian" (default) or "cosine" function
 
 
 %% Plot in frequency domain

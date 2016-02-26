@@ -43,9 +43,12 @@ rhsCalc.geometry = boundary.halfedges;
 %% Computation
 tic
 
-% Create basis functions, 2nd argument false means function has magnitude 1
+% Create basis functions, 2nd argument false means function has magnitude 1,
+% true means function is divided by length
 hat_function = BEUT.BEM.BasisFunction.createHat(boundary.halfedges,false);
 square_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,false);
+hat_function_l = BEUT.BEM.BasisFunction.createHat(boundary.halfedges,true);
+square_function_l = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,true);
 
 % Compute the Z matrices
 gauss_points_m = 4;
@@ -58,8 +61,8 @@ Zmatrix_obj = BEUT.BEM.ZMatrices(N_T,dt,boundary.halfedges,c0);
 % all hat functions so we only have to compute the operators once
 Zmatrix_obj.basis_function_Z = hat_function;
 Zmatrix_obj.basis_function_S = hat_function;
-Zmatrix_obj.test_function_Z = hat_function;
-Zmatrix_obj.test_function_S = hat_function;
+Zmatrix_obj.test_function_Z = hat_function_l;
+Zmatrix_obj.test_function_S = hat_function_l;
 
 % Lagrange interpolators (temporal basis functions)
 timeBasis = BEUT.BEM.LagrangeInterpolator(dt,1);
@@ -76,14 +79,14 @@ toc
 
 %% TE MFIE
 % RHS vector calculation
-rhsCalc.test_function = square_function;
+rhsCalc.test_function = square_function_l;
 Hz_i  = rhsCalc.compute(false) / eta0;
 
 % Compute Gram matrix
 Gram = BEUT.BEM.GramMatrix();
 Gram.geometry = boundary.halfedges;
-Gram.test_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,true);
-Gram.basis_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,false);
+Gram.test_function = square_function_l;
+Gram.basis_function = square_function;
 g = compute(Gram);
 G = O; G(:,:,1) = 0.5*g;
 
@@ -114,11 +117,11 @@ BEUT.BEM.Main.plotCurrentDensityInFrequency(c0, Jfxy_MFIE, omega, A, limit, obse
 
 %% TM MFIE
 % RHS vector calculation
-rhsCalc.test_function = hat_function;
+rhsCalc.test_function = hat_function_l;
 Hxy_i  = rhsCalc.compute(true) / eta0;
 
-Gram.test_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,false);
-Gram.basis_function = BEUT.BEM.BasisFunction.createSquare(boundary.halfedges,true);
+Gram.test_function = square_function_l;
+Gram.basis_function = square_function;
 g = Gram.compute;
 G = O; G(:,:,1) = 0.5*g;
 
@@ -150,7 +153,7 @@ BEUT.BEM.Main.plotCurrentDensityInFrequency(c0, Jfz_MFIE, omega, A, limit, obser
 
 %% TM EFIE
 % RHS vector calculation
-rhsCalc.test_function = square_function;
+rhsCalc.test_function = square_function_l;
 Ez_i  = rhsCalc.compute(false);
 
 % MOT
@@ -180,7 +183,7 @@ BEUT.BEM.Main.plotCurrentDensityInFrequency(c0, Jfz_EFIE, omega, A, limit, obser
 
 %% TE EFIE
 % RHS vector calculation
-rhsCalc.test_function = hat_function;
+rhsCalc.test_function = hat_function_l;
 Exy_i = rhsCalc.compute(true);
 
 % MOT

@@ -44,7 +44,7 @@ classdef GramMatrix
                 
                 l_m = obj.geometry(m).l;
                 
-                C{m,m} = G_coeffs * l_m * l_m;
+                C{m,m} = G_coeffs * l_m;
                     
             end
             
