@@ -40,6 +40,7 @@ if strcmp(field,'E')
     S.FaceVertexCData = obj.V0;
     
 elseif strcmp(field,'H')
+    S.FaceColor = 'flat';
     S.FaceVertexCData = obj.I0;
 else
     error('field must be either ''E'' or ''H''');

@@ -549,10 +549,11 @@ play_function
                 
             case 'surf'
                 
-                surf(domain_x,domain_y, field(i).value(:,:,k), 'LineStyle','none');
-%                 surf(domain_x,domain_y, field(i).value(:,:,k), 'EdgeColor','none', 'FaceColor','interp');
+%                 surf(domain_x,domain_y, field(i).value(:,:,k), 'LineStyle','none');
+                surf(domain_x,domain_y, field(i).value(:,:,k), 'EdgeColor','none', 'FaceColor','interp');
                 view (field(i).dimensions);
                 axis(field(i).axis_size);
+                axis equal;
                 if field(i).dimensions==2, colorbar; end
                 
             case 'patch'
